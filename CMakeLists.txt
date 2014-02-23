@@ -24,10 +24,9 @@ INCLUDE(cmake/base.cmake)
 INCLUDE(cmake/cpack.cmake)
 INCLUDE(cmake/idl.cmake)
 INCLUDE(cmake/python.cmake)
-INCLUDE(cmake/kineo.cmake)
 
 SET(PROJECT_NAME hpp-wholebody-step-corba)
-SET(PROJECT_DESCRIPTION "Corba server and python client for hpp-wholebody-step-planner")
+SET(PROJECT_DESCRIPTION "Corba server and python client for hpp-wholebody-step")
 SET(PROJECT_URL "http://github.com/laas/hpp-wholebody-step-corba")
 
 SET(${PROJECT_NAME}_HEADERS
@@ -38,9 +37,14 @@ SET(CUSTOM_HEADER_DIR hpp/corbaserver/wholebody-step)
 
 SETUP_PROJECT()
 
+# Activate hpp-util logging if requested
+SET (HPP_DEBUG FALSE CACHE BOOL "trigger hpp-util debug output")
+IF (HPP_DEBUG)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHPP_DEBUG")
+ENDIF()
 
 # Search for dependencies.
-ADD_REQUIRED_DEPENDENCY("hpp-wholebody-step-planner >= 0.2")
+ADD_REQUIRED_DEPENDENCY("hpp-wholebody-step")
 ADD_REQUIRED_DEPENDENCY("hpp-corbaserver >= 2.1")
 ADD_REQUIRED_DEPENDENCY("hpp-template-corba >= 1.1")
 ADD_REQUIRED_DEPENDENCY("hpp-util >= 0.6")

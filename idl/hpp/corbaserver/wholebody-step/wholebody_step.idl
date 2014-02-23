@@ -18,11 +18,17 @@
 // <http://www.gnu.org/licenses/>.
 
 module hpp {
-  interface WholeBodyStep {
+  /// \brief Robot configuration is defined by a sequence of dof value.
+  typedef sequence<double> dofSeq;
+  typedef sequence<dofSeq> dofSeqSeq;
+
+  interface WholebodyStep {
+    /// Set static stability constraints to robot
+    short addStaticStabilityConstraints (in dofSeq dofArray);
     /// Generate a goal configuration.
     /// \param x, y, z: desired position of the end effector (right hand)
     /// \param nbConfig Number of goal configurations to generate.
     short generateGoalConfig (in double x, in double y, in double z,
 			      in unsigned short nbConfig);
-  }; //interface Problem
+  }; //interface WholebodyStep
 }; // module hpp

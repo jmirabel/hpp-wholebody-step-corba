@@ -18,7 +18,7 @@
 from omniORB import CORBA
 import CosNaming
 
-from hpp import WholeBodyStep
+from hpp import WholebodyStep
 
 class CorbaError(Exception):
     """
@@ -45,14 +45,14 @@ class Client:
         raise CorbaError ('failed to narrow the root context')
 
     name = [CosNaming.NameComponent ("hpp", "plannerContext"),
-            CosNaming.NameComponent ("hpp", "wholeBodyStep")]
+            CosNaming.NameComponent ("hpp", "wholebodyStep")]
     
     try:
         obj = self.rootContext.resolve (name)
     except CosNaming.NamingContext.NotFound, ex:
-        raise CorbaError ('failed to find wholeBodyStep service.')
+        raise CorbaError ('failed to find wholebodyStep service.')
     try:
-        client = obj._narrow (WholeBodyStep)
+        client = obj._narrow (WholebodyStep)
     except KeyError:
         raise CorbaError ('invalid service name wholebodyStep')
 

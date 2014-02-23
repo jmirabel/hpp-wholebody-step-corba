@@ -1,5 +1,5 @@
-// Copyright (C) 2011,2012 CNRS-LAAS
-// Author: Sebastien Dalibard.
+// Copyright (C) 2011,2012,2013,2014 CNRS-LAAS
+// Author: Florent Lamiraux.
 //
 // This file is part of the hpp-wholebody-step-corba.
 //
@@ -21,26 +21,28 @@
 # define HPP_WHOLEBODY_STEP_CORBA_WHOLEBODY_STEP_HH
 
 # include <omniORB4/CORBA.h>
-# include <hpp/wholebody-step-planner/fwd.hh>
-
+# include <hpp/core/problem-solver.hh>
+# include <hpp/corbaserver/wholebody-step/fwd.hh>
 # include "wholebody_step.hh"
 
 namespace hpp {
-  namespace wholeBodyStepPlanner {
+  namespace wholebodyStep {
     namespace impl {
-      class WholeBodyStep : public virtual POA_hpp::WholeBodyStep
+      class WholebodyStep : public virtual POA_hpp::WholebodyStep
       {
       public:
-	WholeBodyStep ();
-	void setPlanner (Planner* planner);
+	WholebodyStep ();
+	void setProblemSolver (const ProblemSolverPtr_t& problemSolver);
+	virtual CORBA::Short
+	addStaticStabilityConstraints (const hpp::dofSeq& dofArray);
 	virtual CORBA::Short
 	generateGoalConfig (CORBA::Double x, CORBA::Double y, CORBA::Double z,
 			    CORBA::UShort nbConfig);
       private:
-	Planner* planner_;
-      }; // class WholeBodyStep
+	core::ProblemSolverPtr_t problemSolver_;
+      }; // class WholebodyStep
     } // namespace impl
-  } // namespace wholeBodyStepPlanner
+  } // namespace wholebodyStep
 } // namespace hpp
 
 #endif //HPP_WHOLEBODY_STEP_CORBA_WHOLEBODY_STEP_HH

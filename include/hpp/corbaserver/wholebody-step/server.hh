@@ -1,5 +1,5 @@
-// Copyright (C) 2011,2012 CNRS-LAAS
-// Author: Sebastien Dalibard.
+// Copyright (C) 2011,2012,2013,2014 CNRS-LAAS
+// Author: Florent Lamiraux.
 //
 // This file is part of the hpp-wholebody-step-corba.
 //
@@ -21,22 +21,23 @@
 # define HPP_WHOLEBODY_STEP_CORBA_SERVER_HH
 
 # include <hpp/corba/template/server.hh>
-# include "hpp/wholebody-step-planner/fwd.hh"
+# include <hpp/corbaserver/wholebody-step/fwd.hh>
+# include <hpp/corbaserver/wholebody-step/config.hh>
 
 namespace hpp {
-  namespace wholeBodyStepPlanner {
+  namespace wholebodyStep {
     namespace impl {
-      class WholeBodyStep;
+      class WholebodyStep;
     } // namespace impl
-
-    class Server
+          
+    class HPP_WHOLEBODY_STEP_CORBA_DLLAPI Server
     {
     public:
       Server (int argc, char *argv[], bool multiThread = false,
 	      const std::string& poaName = "child");
       ~Server ();
       /// Set planner that will be controlled by server
-      void setPlanner (Planner* planner);
+      void setProblemSolver (ProblemSolverPtr_t problemSolver);
 
       /// Start corba server
 
@@ -46,9 +47,9 @@ namespace hpp {
 			    const std::string& objectId,
 			    const std::string& objectKind);
     private:
-      corba::Server <impl::WholeBodyStep>* impl_;
+      corba::Server <impl::WholebodyStep>* impl_;
     };
-  } // namespace wholeBodyStepPlanner
+  } // namespace wholebodyStep
 } // namespace hpp
   
 #endif // HPP_WHOLEBODY_STEP_CORBA_SERVER_HH

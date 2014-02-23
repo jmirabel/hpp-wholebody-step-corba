@@ -10,32 +10,24 @@
 // See the COPYING file for more information.
 
 #include <iostream>
-#include <KineoModel/kppLicense.h>
-
 #include <hpp/util/debug.hh>
-
-#include <hpp/wholebody-step-planner/planner.hh>
-#include <hpp/corbaserver/wholebody-step/server.hh>
+#include <hpp/core/problem-solver.hh>
 #include <hpp/corbaserver/server.hh>
+#include <hpp/corbaserver/wholebody-step/server.hh>
 
-using hpp::wholeBodyStepPlanner::Planner;
-typedef hpp::wholeBodyStepPlanner::Server WholeBodyServer;
+typedef hpp::wholebodyStep::Server WholebodyServer;
 typedef hpp::corbaServer::Server CorbaServer;
-
+typedef hpp::wholebodyStep::ProblemSolverPtr_t ProblemSolverPtr_t;
+typedef hpp::wholebodyStep::ProblemSolver ProblemSolver;
 int
 main (int argc, char* argv[])
 {
-  if (!CkppLicense::initialize ())
-    hppDoutFatal (error, "failed to get a Kineo license");
-
-  double samplingPeriod = 0.05;
-  Planner* wbsPlanner = new Planner (samplingPeriod);
-  wbsPlanner->setFootPrintLimits(-0.2,0.2,-0.25,-0.13,-M_PI /4,0.1);
-
-  CorbaServer corbaServer (wbsPlanner, argc,
+  Eigen::internal::set_is_malloc_allowed (true);
+  ProblemSolverPtr_t problemSolver = new ProblemSolver;
+  CorbaServer corbaServer (problemSolver, argc,
 			   const_cast<const char**> (argv), true);
-  WholeBodyServer wbsServer (argc, argv, true);
-  wbsServer.setPlanner (wbsPlanner);
+  WholebodyServer wbsServer (argc, argv, true);
+  wbsServer.setProblemSolver (problemSolver);
 
   try {
     corbaServer.startCorbaServer ();
@@ -45,7 +37,7 @@ main (int argc, char* argv[])
   }
   try {
     wbsServer.startCorbaServer ("hpp", "plannerContext",
-				"hpp", "wholeBodyStep");
+				"hpp", "wholebodyStep");
 
     hppDout (info, "Successfully started corba server for whole body planner");
   } catch (const std::exception& exc) {

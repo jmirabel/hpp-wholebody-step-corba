@@ -1,5 +1,5 @@
-// Copyright (C) 2011,2012 CNRS-LAAS
-// Author: Sebastien Dalibard.
+// Copyright (C) 2011,2012,2013,2014 CNRS-LAAS
+// Author: Florent Lamiraux.
 //
 // This file is part of the hpp-wholebody-step-corba.
 //
@@ -18,24 +18,80 @@
 // <http://www.gnu.org/licenses/>.
 
 #include <cassert>
-#include <hpp/wholebody-step-planner/planner.hh>
+#include <hpp/util/debug.hh>
+#include <hpp/model/humanoid-robot.hh>
+#include <hpp/core/config-projector.hh>
+#include <hpp/core/constraint-set.hh>
+#include <hpp/wholebody-step/static-stability-constraint.hh>
 #include "wholebody_step.impl.hh"
 
 namespace hpp {
-  namespace wholeBodyStepPlanner {
+  namespace wholebodyStep {
+    using hpp::wholebodyStep::createSlidingStabilityConstraint;
     namespace impl {
-      WholeBodyStep::WholeBodyStep () : planner_ (0) {}
-      void WholeBodyStep::setPlanner (Planner* planner)
+
+      static ConfigurationPtr_t dofSeqToConfig
+      (ProblemSolverPtr_t problemSolver, const hpp::dofSeq& dofArray)
       {
-	planner_ = planner;
+	unsigned int configDim = (unsigned int)dofArray.length();
+	ConfigurationPtr_t config (new Configuration_t (configDim));
+	
+	// Get robot in hppPlanner object.
+	DevicePtr_t robot = problemSolver->robot ();
+
+	// Compare size of input array with number of degrees of freedom of
+	// robot.
+	if (configDim != robot->configSize ()) {
+	  hppDout (error, "robot configSize (" << robot->configSize ()
+		   << ") is different from config size ("
+		   << configDim << ")");
+	  throw std::runtime_error
+	    ("robot nb dof is different from config size");
+	}
+
+	// Fill dof vector with dof array.
+	for (unsigned int iDof=0; iDof < configDim; ++iDof) {
+	  (*config) [iDof] = dofArray [iDof];
+	}
+	return config;
       }
-      CORBA::Short WholeBodyStep::generateGoalConfig
+
+      WholebodyStep::WholebodyStep () : problemSolver_ (0x0) {}
+
+      void WholebodyStep::setProblemSolver
+      (const ProblemSolverPtr_t& problemSolver)
+      {
+	problemSolver_ = problemSolver;
+      }
+
+      CORBA::Short WholebodyStep::addStaticStabilityConstraints
+      (const hpp::dofSeq& dofArray)
+      {
+	try {
+	  ConfigurationPtr_t config = dofSeqToConfig (problemSolver_, dofArray);
+	  HumanoidRobotPtr_t robot = boost::dynamic_pointer_cast <HumanoidRobot>
+	    (problemSolver_->robot ());
+	  if (!robot) {
+	    hppDout (error, "Robot is not a humanoid robot.");
+	    return -1;
+	  }
+	  ConfigProjectorPtr_t projector = createSlidingStabilityConstraint
+	    (robot, *config, 1e-3, 20);
+	  problemSolver_->addConstraint (projector);
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
+	  return -1;
+	}
+	return 0;
+      }
+
+      CORBA::Short WholebodyStep::generateGoalConfig
       (CORBA::Double x, CORBA::Double y, CORBA::Double z,
        CORBA::UShort nbConfig)
       {
-	assert (planner_);
-	return planner_->generateGoalConfig (x, y, z, nbConfig);
+	assert (problemSolver_);
+	return 0;
       }
     } // namespace impl
-  } // namespace wholeBodyStepPlanner
+  } // namespace wholebodyStep
 } // namespace hpp

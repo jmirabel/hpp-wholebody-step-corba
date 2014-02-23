@@ -1,5 +1,5 @@
-// Copyright (C) 2011,2012 CNRS-LAAS
-// Author: Sebastien Dalibard.
+// Copyright (C) 2011,2012,2013,2014 CNRS-LAAS
+// Author: Florent Lamiraux.
 //
 // This file is part of the hpp-wholebody-step-corba.
 //
@@ -20,10 +20,21 @@
 #ifndef HPP_WHOLEBODY_STEP_CORBA_FWD_HH
 # define HPP_WHOLEBODY_STEP_CORBA_FWD_HH
 
+# include <hpp/core/fwd.hh>
+
 namespace hpp {
-  namespace wholeBodyStepPlanner {
+  namespace wholebodyStep {
+    typedef core::ProblemSolver ProblemSolver;
+    typedef core::ProblemSolverPtr_t ProblemSolverPtr_t;
+    typedef core::ConfigProjectorPtr_t ConfigProjectorPtr_t;
+    typedef core::Configuration_t Configuration_t;
+    typedef core::ConfigurationPtr_t ConfigurationPtr_t;
+    typedef model::DevicePtr_t DevicePtr_t;
+    typedef model::HumanoidRobotPtr_t HumanoidRobotPtr_t;
+    typedef model::HumanoidRobot HumanoidRobot;
+
     class Server;
-  } // namespace wholeBodyStepPlanner
+  } // namespace wholebodyStep
 } // namespace hpp
   
 #endif // HPP_WHOLEBODY_STEP_CORBA_SERVER_HH
