@@ -25,8 +25,8 @@ main (int argc, char* argv[])
   Eigen::internal::set_is_malloc_allowed (true);
   ProblemSolverPtr_t problemSolver = new ProblemSolver;
   CorbaServer corbaServer (problemSolver, argc,
-			   const_cast<const char**> (argv), true);
-  WholebodyServer wbsServer (argc, argv, true);
+			   const_cast<const char**> (argv), false);
+  WholebodyServer wbsServer (argc, argv, false);
   wbsServer.setProblemSolver (problemSolver);
 
   try {
