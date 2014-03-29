@@ -44,10 +44,10 @@ IF (HPP_DEBUG)
 ENDIF()
 
 # Search for dependencies.
-ADD_REQUIRED_DEPENDENCY("hpp-wholebody-step")
-ADD_REQUIRED_DEPENDENCY("hpp-corbaserver >= 2.1")
+ADD_REQUIRED_DEPENDENCY("hpp-wholebody-step >= 3")
+ADD_REQUIRED_DEPENDENCY("hpp-corbaserver >= 3")
 ADD_REQUIRED_DEPENDENCY("hpp-template-corba >= 1.1")
-ADD_REQUIRED_DEPENDENCY("hpp-util >= 0.6")
+ADD_REQUIRED_DEPENDENCY("hpp-util >= 3")
 # This dependency ensures us that the intermediate __init__.py files are
 # already installed.
 ADD_REQUIRED_DEPENDENCY("hpp-corbaserver >= 2.1")
