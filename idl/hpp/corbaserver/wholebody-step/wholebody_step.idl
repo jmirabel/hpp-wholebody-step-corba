@@ -17,18 +17,28 @@
 // License along with hpp-wholebody-step-corba.  If not, see
 // <http://www.gnu.org/licenses/>.
 
+#ifndef HPP_WHOLEBODY_STEP_CORBA_IDL
+# define HPP_WHOLEBODY_STEP_CORBA_IDL
+
 module hpp {
+  /// Corba exception travelling through the Corba channel
+  exception Error
+  {
+    string msg;
+  };
   /// \brief Robot configuration is defined by a sequence of dof value.
   typedef sequence<double> dofSeq;
   typedef sequence<dofSeq> dofSeqSeq;
 
   interface WholebodyStep {
     /// Set static stability constraints to robot
-    short addStaticStabilityConstraints (in dofSeq dofArray);
+    void addStaticStabilityConstraints (in dofSeq dofArray) raises (Error);
     /// Generate a goal configuration.
     /// \param x, y, z: desired position of the end effector (right hand)
     /// \param nbConfig Number of goal configurations to generate.
-    short generateGoalConfig (in double x, in double y, in double z,
-			      in unsigned short nbConfig);
+    void generateGoalConfig (in double x, in double y, in double z,
+			     in unsigned short nbConfig) raises (Error);
   }; //interface WholebodyStep
 }; // module hpp
+
+#endif // HPP_WHOLEBODY_STEP_CORBA_IDL

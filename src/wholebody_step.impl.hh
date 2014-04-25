@@ -33,11 +33,13 @@ namespace hpp {
       public:
 	WholebodyStep ();
 	void setProblemSolver (const ProblemSolverPtr_t& problemSolver);
-	virtual CORBA::Short
-	addStaticStabilityConstraints (const hpp::dofSeq& dofArray);
-	virtual CORBA::Short
+	virtual void
+	addStaticStabilityConstraints (const hpp::dofSeq& dofArray)
+	  throw (hpp::Error);
+	virtual void
 	generateGoalConfig (CORBA::Double x, CORBA::Double y, CORBA::Double z,
-			    CORBA::UShort nbConfig);
+			    CORBA::UShort nbConfig)
+	  throw (hpp::Error);
       private:
 	core::ProblemSolverPtr_t problemSolver_;
       }; // class WholebodyStep

@@ -64,33 +64,29 @@ namespace hpp {
 	problemSolver_ = problemSolver;
       }
 
-      CORBA::Short WholebodyStep::addStaticStabilityConstraints
-      (const hpp::dofSeq& dofArray)
+      void WholebodyStep::addStaticStabilityConstraints
+      (const hpp::dofSeq& dofArray) throw (hpp::Error)
       {
 	try {
 	  ConfigurationPtr_t config = dofSeqToConfig (problemSolver_, dofArray);
 	  HumanoidRobotPtr_t robot = boost::dynamic_pointer_cast <HumanoidRobot>
 	    (problemSolver_->robot ());
 	  if (!robot) {
-	    hppDout (error, "Robot is not a humanoid robot.");
-	    return -1;
+	    throw hpp::Error ("Robot is not a humanoid robot.");
 	  }
 	  ConfigProjectorPtr_t projector = createSlidingStabilityConstraint
 	    (robot, *config, 1e-3, 20);
 	  problemSolver_->addConstraint (projector);
 	} catch (const std::exception& exc) {
-	  hppDout (error, exc.what ());
-	  return -1;
+	  throw hpp::Error (exc.what ());
 	}
-	return 0;
       }
 
-      CORBA::Short WholebodyStep::generateGoalConfig
+      void WholebodyStep::generateGoalConfig
       (CORBA::Double x, CORBA::Double y, CORBA::Double z,
-       CORBA::UShort nbConfig)
+       CORBA::UShort nbConfig) throw (hpp::Error)
       {
 	assert (problemSolver_);
-	return 0;
       }
     } // namespace impl
   } // namespace wholebodyStep
