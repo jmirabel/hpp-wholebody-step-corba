@@ -64,5 +64,7 @@ PKG_CONFIG_APPEND_LIBS(${PROJECT_NAME})
 
 ADD_SUBDIRECTORY(src)
 
+CONFIG_FILES (include/hpp/corbaserver/wholebody-step/doc.hh)
+
 SETUP_PROJECT_FINALIZE()
 SETUP_PROJECT_CPACK()
