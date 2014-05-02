@@ -27,7 +27,7 @@
 namespace hpp {
   namespace wholebodyStep {
     namespace impl {
-      class WholebodyStep;
+      class Problem;
     } // namespace impl
           
     class HPP_WHOLEBODY_STEP_CORBA_DLLAPI Server
@@ -47,7 +47,7 @@ namespace hpp {
 			    const std::string& objectId,
 			    const std::string& objectKind);
     private:
-      corba::Server <impl::WholebodyStep>* impl_;
+      corba::Server <impl::Problem>* impl_;
     };
   } // namespace wholebodyStep
 } // namespace hpp

@@ -23,15 +23,16 @@
 # include <omniORB4/CORBA.h>
 # include <hpp/core/problem-solver.hh>
 # include <hpp/corbaserver/wholebody-step/fwd.hh>
-# include "wholebody_step.hh"
+# include "problem.hh"
 
 namespace hpp {
   namespace wholebodyStep {
     namespace impl {
-      class WholebodyStep : public virtual POA_hpp::WholebodyStep
+      class Problem : public virtual
+      POA_hpp::corbaserver::wholebody_step::Problem
       {
       public:
-	WholebodyStep ();
+	Problem ();
 	void setProblemSolver (const ProblemSolverPtr_t& problemSolver);
 	virtual void
 	addStaticStabilityConstraints (const hpp::dofSeq& dofArray)

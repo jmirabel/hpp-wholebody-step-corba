@@ -16,7 +16,7 @@
 # <http://www.gnu.org/licenses/>.
 
 SET(IDL_SOURCES
-  wholebody_step)
+  problem)
 
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src)
 FOREACH(IDL ${IDL_SOURCES})
@@ -28,10 +28,10 @@ SET(LIBRARY_NAME ${PROJECT_NAME})
 ADD_LIBRARY(${LIBRARY_NAME}
   SHARED
   server.cc
-  wholebody_step.impl.hh
-  wholebody_step.impl.cc
-  wholebody_stepSK.cc
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody_step/wholebody_step_idl.py
+  problem.impl.hh
+  problem.impl.cc
+  problemSK.cc
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody_step/problem_idl.py
 )
 
 PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-wholebody-step)
@@ -53,8 +53,7 @@ FOREACH (IDL ${IDL_SOURCES})
   ADD_CUSTOM_COMMAND(
     OUTPUT
     ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody_step/${IDL}_idl.py
-    COMMAND ${OMNIIDL}
-    ARGS -bpython -Wbpackage="hpp.corbaserver.wholebody_step"
+    COMMAND ${OMNIIDL} ARGS -bpython -Wbpackage=""
     ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/wholebody-step/${IDL}.idl
     MAIN_DEPENDENCY
     ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/wholebody-step/${IDL}.idl
@@ -65,7 +64,7 @@ FOREACH (IDL ${IDL_SOURCES})
     )
   INSTALL(
     FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody_step/${IDL}_idl.py
+    ${CMAKE_CURRENT_BINARY_DIR}/${IDL}_idl.py
     DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver/wholebody_step
     )
 ENDFOREACH()
@@ -73,16 +72,6 @@ INSTALL(
   FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/hpp/corbaserver/wholebody_step/__init__.py
   DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver/wholebody_step
-  )
-INSTALL(
-  FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody_step/hpp/__init__.py
-  DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver/wholebody_step/hpp
-  )
-INSTALL(
-  FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody_step/hpp__POA/__init__.py
-  DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver/wholebody_step/hpp__POA
   )
 INSTALL(
   FILES

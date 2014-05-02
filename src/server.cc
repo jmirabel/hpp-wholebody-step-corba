@@ -19,13 +19,13 @@
 
 #include <hpp/util/exception.hh>
 #include "hpp/corbaserver/wholebody-step/server.hh"
-#include "wholebody_step.impl.hh"
+#include "problem.impl.hh"
 
 namespace hpp {
   namespace wholebodyStep {
     Server::Server (int argc, char *argv[], bool multiThread,
 		    const std::string& poaName) : 
-      impl_ (new corba::Server <impl::WholebodyStep>
+      impl_ (new corba::Server <impl::Problem>
 	     (argc, argv, multiThread, poaName)) {}
     Server::~Server () { delete impl_;}
     void Server::setProblemSolver (ProblemSolverPtr_t problemSolver)

@@ -23,7 +23,7 @@
 #include <hpp/core/config-projector.hh>
 #include <hpp/core/constraint-set.hh>
 #include <hpp/wholebody-step/static-stability-constraint.hh>
-#include "wholebody_step.impl.hh"
+#include "problem.impl.hh"
 
 namespace hpp {
   namespace wholebodyStep {
@@ -56,15 +56,15 @@ namespace hpp {
 	return config;
       }
 
-      WholebodyStep::WholebodyStep () : problemSolver_ (0x0) {}
+      Problem::Problem () : problemSolver_ (0x0) {}
 
-      void WholebodyStep::setProblemSolver
+      void Problem::setProblemSolver
       (const ProblemSolverPtr_t& problemSolver)
       {
 	problemSolver_ = problemSolver;
       }
 
-      void WholebodyStep::addStaticStabilityConstraints
+      void Problem::addStaticStabilityConstraints
       (const hpp::dofSeq& dofArray) throw (hpp::Error)
       {
 	try {
@@ -82,7 +82,7 @@ namespace hpp {
 	}
       }
 
-      void WholebodyStep::generateGoalConfig
+      void Problem::generateGoalConfig
       (CORBA::Double x, CORBA::Double y, CORBA::Double z,
        CORBA::UShort nbConfig) throw (hpp::Error)
       {

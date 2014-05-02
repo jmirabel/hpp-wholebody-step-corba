@@ -36,8 +36,8 @@ main (int argc, char* argv[])
     hppDout (error, "Faile to start hpp-corbaserver");
   }
   try {
-    wbsServer.startCorbaServer ("hpp", "plannerContext",
-				"hpp", "wholebodyStep");
+    wbsServer.startCorbaServer ("hpp", "corbaserver",
+				"wholebodyStep", "problem");
 
     hppDout (info, "Successfully started corba server for whole body planner");
   } catch (const std::exception& exc) {

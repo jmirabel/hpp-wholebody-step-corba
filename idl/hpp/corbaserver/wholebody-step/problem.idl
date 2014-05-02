@@ -26,19 +26,23 @@ module hpp {
   {
     string msg;
   };
-  /// \brief Robot configuration is defined by a sequence of dof value.
+  /// Robot configuration is defined by a sequence of dof value.
   typedef sequence<double> dofSeq;
   typedef sequence<dofSeq> dofSeqSeq;
 
-  interface WholebodyStep {
-    /// Set static stability constraints to robot
+  module corbaserver {
+  module wholebody_step {
+  interface Problem {
+    /// Set static stability constraints to problem
     void addStaticStabilityConstraints (in dofSeq dofArray) raises (Error);
     /// Generate a goal configuration.
     /// \param x, y, z: desired position of the end effector (right hand)
     /// \param nbConfig Number of goal configurations to generate.
     void generateGoalConfig (in double x, in double y, in double z,
 			     in unsigned short nbConfig) raises (Error);
-  }; //interface WholebodyStep
+  }; //interface Problem
+  }; // module wholebody_step
+  }; // module corbaserver
 }; // module hpp
 
 #endif // HPP_WHOLEBODY_STEP_CORBA_IDL
