@@ -34,7 +34,13 @@ module hpp {
   module wholebody_step {
   interface Problem {
     /// Set static stability constraints to problem
-    void addStaticStabilityConstraints (in dofSeq dofArray) raises (Error);
+    /// \param constraintName Name of the constraint as stored in ProblemSolver,
+    /// \param dofArray input configuration for computing constraint reference,
+    /// \param leftAnkle, rightAnkle: names of the ankle joints.
+    void addStaticStabilityConstraints (in string constraintName,
+					in dofSeq dofArray, in string leftAnkle,
+					in string rightAnkle)
+      raises (Error);
     /// Generate a goal configuration.
     /// \param x, y, z: desired position of the end effector (right hand)
     /// \param nbConfig Number of goal configurations to generate.

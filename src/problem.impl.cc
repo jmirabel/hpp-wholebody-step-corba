@@ -27,7 +27,9 @@
 
 namespace hpp {
   namespace wholebodyStep {
-    using hpp::wholebodyStep::createSlidingStabilityConstraint;
+    using hpp::wholebodyStep::addSlidingStabilityConstraint;
+    using hpp::core::ConstraintSetPtr_t;
+    using hpp::core::ConfigProjectorPtr_t;
     namespace impl {
 
       static ConfigurationPtr_t dofSeqToConfig
@@ -65,20 +67,32 @@ namespace hpp {
       }
 
       void Problem::addStaticStabilityConstraints
-      (const hpp::dofSeq& dofArray) throw (hpp::Error)
+      (const char* constraintName, const hpp::dofSeq& dofArray,
+       const char* leftAnkle, const char* rightAnkle) throw (hpp::Error)
       {
 	try {
 	  ConfigurationPtr_t config = dofSeqToConfig (problemSolver_, dofArray);
-	  HumanoidRobotPtr_t robot = boost::dynamic_pointer_cast <HumanoidRobot>
-	    (problemSolver_->robot ());
+	  const ConstraintSetPtr_t& constraints
+	    (problemSolver_->constraints ());
+	  const DevicePtr_t& robot (problemSolver_->robot ());
 	  if (!robot) {
-	    throw hpp::Error ("Robot is not a humanoid robot.");
+	    throw Error ("You should set the robot before defining"
+			 " constraints.");
 	  }
-	  ConfigProjectorPtr_t projector = createSlidingStabilityConstraint
-	    (robot, *config, 1e-3, 20);
-	  problemSolver_->addConstraint (projector);
+	  ConfigProjectorPtr_t  configProjector =
+	    constraints->configProjector ();
+	  if (!configProjector) {
+	    configProjector = ConfigProjector::create
+	      (robot, constraintName, problemSolver_->errorThreshold (),
+	       problemSolver_->maxIterations ());
+	    constraints->addConstraint (configProjector);
+	  }
+	  JointPtr_t la = robot->getJointByName (leftAnkle);
+	  JointPtr_t ra = robot->getJointByName (rightAnkle);
+	  addSlidingStabilityConstraint (configProjector, robot, la, ra,
+					 *config);
 	} catch (const std::exception& exc) {
-	  throw hpp::Error (exc.what ());
+	  throw Error (exc.what ());
 	}
       }
 

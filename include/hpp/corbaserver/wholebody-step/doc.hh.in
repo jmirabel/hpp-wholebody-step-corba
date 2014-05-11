@@ -29,7 +29,7 @@
 /// class:
 ///   \li hpp::wholebodyStep::Server.
 /// The corba services provided by the library are described in interface
-///   \li hpp::WholebodyStep.
+///   \li hpp::corbaserver::wholebody_step::Problem.
 ///
 /// The client part is provided through python module
 /// \c hpp.corbaserver.wholebody_step
