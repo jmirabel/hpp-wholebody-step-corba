@@ -44,6 +44,7 @@ IF (HPP_DEBUG)
 ENDIF()
 
 # Search for dependencies.
+ADD_DOC_DEPENDENCY ("hpp-core >= 3")
 ADD_REQUIRED_DEPENDENCY("hpp-wholebody-step >= 3")
 ADD_REQUIRED_DEPENDENCY("hpp-corbaserver >= 3")
 ADD_REQUIRED_DEPENDENCY("hpp-template-corba >= 1.1")
