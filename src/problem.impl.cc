@@ -27,7 +27,7 @@
 
 namespace hpp {
   namespace wholebodyStep {
-    using hpp::wholebodyStep::addSlidingStabilityConstraint;
+    using hpp::wholebodyStep::createSlidingStabilityConstraint;
     using hpp::core::ConstraintSetPtr_t;
     using hpp::core::ConfigProjectorPtr_t;
     namespace impl {
@@ -37,7 +37,7 @@ namespace hpp {
       {
 	unsigned int configDim = (unsigned int)dofArray.length();
 	ConfigurationPtr_t config (new Configuration_t (configDim));
-	
+
 	// Get robot in hppPlanner object.
 	DevicePtr_t robot = problemSolver->robot ();
 
@@ -67,30 +67,35 @@ namespace hpp {
       }
 
       void Problem::addStaticStabilityConstraints
-      (const char* constraintName, const hpp::dofSeq& dofArray,
+      (const char* prefix, const hpp::dofSeq& dofArray,
        const char* leftAnkle, const char* rightAnkle) throw (hpp::Error)
       {
+	using core::DifferentiableFunctionPtr_t;
 	try {
 	  ConfigurationPtr_t config = dofSeqToConfig (problemSolver_, dofArray);
-	  const ConstraintSetPtr_t& constraints
-	    (problemSolver_->constraints ());
 	  const DevicePtr_t& robot (problemSolver_->robot ());
 	  if (!robot) {
 	    throw Error ("You should set the robot before defining"
 			 " constraints.");
 	  }
-	  ConfigProjectorPtr_t  configProjector =
-	    constraints->configProjector ();
-	  if (!configProjector) {
-	    configProjector = ConfigProjector::create
-	      (robot, constraintName, problemSolver_->errorThreshold (),
-	       problemSolver_->maxIterations ());
-	    constraints->addConstraint (configProjector);
-	  }
 	  JointPtr_t la = robot->getJointByName (leftAnkle);
 	  JointPtr_t ra = robot->getJointByName (rightAnkle);
-	  addSlidingStabilityConstraint (configProjector, robot, la, ra,
-					 *config);
+	  std::vector <DifferentiableFunctionPtr_t> numericalConstraints =
+	    createSlidingStabilityConstraint (robot, la, ra, *config);
+	  std::string p (prefix);
+	  problemSolver_->addNumericalConstraint
+	    (p + std::string ("/relative-com"), numericalConstraints [0]);
+	  problemSolver_->addNumericalConstraint
+	    (p + std::string ("/relative-orientation"),
+	     numericalConstraints [1]);
+	  problemSolver_->addNumericalConstraint
+	     (p + std::string ("/relative-position"), numericalConstraints [2]);
+	  problemSolver_->addNumericalConstraint
+	      (p + std::string ("/orientation-left-foot"),
+	       numericalConstraints [3]);
+	  problemSolver_->addNumericalConstraint
+	       (p + std::string ("/position-left-foot"),
+		numericalConstraints [4]);
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}

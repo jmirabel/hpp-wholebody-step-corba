@@ -33,11 +33,21 @@ module hpp {
   module corbaserver {
   module wholebody_step {
   interface Problem {
-    /// Set static stability constraints to problem
-    /// \param constraintName Name of the constraint as stored in ProblemSolver,
+    /// Create static stability constraints and store into ProblemSolver
+    /// \param prefix prefix of the names of the constraint as stored in
+    ///        core::ProblemSolver,
     /// \param dofArray input configuration for computing constraint reference,
     /// \param leftAnkle, rightAnkle: names of the ankle joints.
-    void addStaticStabilityConstraints (in string constraintName,
+    ///
+    /// Five constraints are created and store with the following keys by
+    /// calling method core::ProblemSolver::addNumericalConstraint:
+    /// \li prefix + "/relative-com": relative position of the center of mass in
+    ///     the left ankle frame,
+    /// \li prefix + "/relative-orientation": relative orientation of the feet,
+    /// \li prefix + "/relative-position": relative position of the feet,
+    /// \li prefix + "/orientation-left-foot": orientation of the left foot,
+    /// \li prefix + "/position-left-foot": position of the left foot.
+    void addStaticStabilityConstraints (in string prefix,
 					in dofSeq dofArray, in string leftAnkle,
 					in string rightAnkle)
       raises (Error);
