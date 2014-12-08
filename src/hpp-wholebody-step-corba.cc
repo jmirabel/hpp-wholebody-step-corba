@@ -22,7 +22,6 @@ typedef hpp::wholebodyStep::ProblemSolver ProblemSolver;
 int
 main (int argc, char* argv[])
 {
-  Eigen::internal::set_is_malloc_allowed (true);
   ProblemSolverPtr_t problemSolver = new ProblemSolver;
   CorbaServer corbaServer (problemSolver, argc,
 			   const_cast<const char**> (argv), false);
