@@ -35,7 +35,7 @@ namespace hpp {
       static ConfigurationPtr_t dofSeqToConfig
       (ProblemSolverPtr_t problemSolver, const hpp::dofSeq& dofArray)
       {
-	unsigned int configDim = (unsigned int)dofArray.length();
+	size_type configDim = (size_type) dofArray.length();
 	ConfigurationPtr_t config (new Configuration_t (configDim));
 
 	// Get robot in hppPlanner object.
@@ -52,7 +52,7 @@ namespace hpp {
 	}
 
 	// Fill dof vector with dof array.
-	for (unsigned int iDof=0; iDof < configDim; ++iDof) {
+	for (size_type iDof=0; iDof < configDim; ++iDof) {
 	  (*config) [iDof] = dofArray [iDof];
 	}
 	return config;
@@ -102,8 +102,8 @@ namespace hpp {
       }
 
       void Problem::generateGoalConfig
-      (CORBA::Double x, CORBA::Double y, CORBA::Double z,
-       CORBA::UShort nbConfig) throw (hpp::Error)
+      (CORBA::Double, CORBA::Double, CORBA::Double,
+       CORBA::UShort) throw (hpp::Error)
       {
 	assert (problemSolver_);
       }
