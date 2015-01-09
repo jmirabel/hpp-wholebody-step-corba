@@ -24,8 +24,8 @@ main (int argc, char* argv[])
 {
   ProblemSolverPtr_t problemSolver = new ProblemSolver;
   CorbaServer corbaServer (problemSolver, argc,
-			   const_cast<const char**> (argv), false);
-  WholebodyServer wbsServer (argc, argv, false);
+			   const_cast<const char**> (argv), true);
+  WholebodyServer wbsServer (argc, argv, true);
   wbsServer.setProblemSolver (problemSolver);
 
   try {
