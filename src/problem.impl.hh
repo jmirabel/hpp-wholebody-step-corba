@@ -36,7 +36,12 @@ namespace hpp {
 	void setProblemSolver (const ProblemSolverPtr_t& problemSolver);
 	virtual void addStaticStabilityConstraints
 	(const char* prefix, const hpp::dofSeq& dofArray,
-	 const char* leftAnkle, const char* rightAnkle) throw (hpp::Error);
+	 const char* leftAnkle, const char* rightAnkle, const char* comName)
+        throw (hpp::Error);
+	virtual void addStabilityConstraints
+	(const char* prefix, const hpp::dofSeq& dofArray,
+	 const char* leftAnkle, const char* rightAnkle, const char* comName)
+        throw (hpp::Error);
 	virtual void
 	generateGoalConfig (CORBA::Double x, CORBA::Double y, CORBA::Double z,
 			    CORBA::UShort nbConfig)

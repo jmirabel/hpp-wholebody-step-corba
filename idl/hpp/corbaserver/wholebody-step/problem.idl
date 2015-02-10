@@ -38,6 +38,8 @@ module hpp {
     ///        core::ProblemSolver,
     /// \param dofArray input configuration for computing constraint reference,
     /// \param leftAnkle, rightAnkle: names of the ankle joints.
+    /// \param comName name of the PartialCOM in the problem solver map. Put "" for
+    ///        a full COM computations.
     ///
     /// Five constraints are created and store with the following keys by
     /// calling method core::ProblemSolver::addNumericalConstraint:
@@ -47,10 +49,33 @@ module hpp {
     /// \li prefix + "/relative-position": relative position of the feet,
     /// \li prefix + "/orientation-left-foot": orientation of the left foot,
     /// \li prefix + "/position-left-foot": position of the left foot.
-    void addStaticStabilityConstraints (in string prefix,
-					in dofSeq dofArray, in string leftAnkle,
-					in string rightAnkle)
+    void addStaticStabilityConstraints (in string prefix, in dofSeq dofArray,
+                                        in string leftAnkle, in string rightAnkle,
+                                        in string comName)
       raises (Error);
+
+    /// Create constraints that ensure that the COM is between the two ankles
+    /// and store into ProblemSolver
+    /// \param prefix prefix of the names of the constraint as stored in
+    ///        core::ProblemSolver,
+    /// \param dofArray input configuration for computing constraint reference,
+    /// \param leftAnkle, rightAnkle: names of the ankle joints.
+    /// \param comName name of the PartialCOM in the problem solver map. Put "" for
+    ///        a full COM computations.
+    ///
+    /// Five constraints are created and store with the following keys by
+    /// calling method core::ProblemSolver::addNumericalConstraint:
+    /// \li prefix + "/com-between-feet": The COM projection along z lies between the
+    ///                                   the two ankles
+    /// \li prefix + "/orientation-right": orientation of the right foot,
+    /// \li prefix + "/position-right": position of the right foot,
+    /// \li prefix + "/orientation-left": orientation of the left foot,
+    /// \li prefix + "/position-left": position of the left foot.
+    void addStabilityConstraints (in string prefix, in dofSeq dofArray,
+                                        in string leftAnkle, in string rightAnkle,
+                                        in string comName)
+      raises (Error);
+
     /// Generate a goal configuration.
     /// \param x, y, z: desired position of the end effector (right hand)
     /// \param nbConfig Number of goal configurations to generate.
