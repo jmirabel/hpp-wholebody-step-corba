@@ -29,10 +29,73 @@
 namespace hpp {
   namespace wholebodyStep {
     using hpp::wholebodyStep::createSlidingStabilityConstraint;
-    using hpp::wholebodyStep::createStabilityConstraint;
+    using hpp::wholebodyStep::createAlignedCOMStabilityConstraint;
     using hpp::core::ConstraintSetPtr_t;
     using hpp::core::ConfigProjectorPtr_t;
+    using hpp::model::CenterOfMassComputation;
+
     namespace impl {
+      namespace {
+        typedef std::pair <std::string, NumericalConstraintPtr_t>
+          NamedConstraint_t;
+        typedef std::list <NamedConstraint_t> NamedConstraints_t;
+
+        NamedConstraints_t createSliding (const DevicePtr_t robot,
+            const char* prefix, const ConfigurationPtr_t& config,
+            const JointPtr_t leftAnkle, const JointPtr_t rightAnkle,
+            const CenterOfMassComputationPtr_t comc)
+        {
+          NamedConstraints_t constraints;
+          std::vector <NumericalConstraintPtr_t> numericalConstraints =
+            createSlidingStabilityConstraint (robot, comc,
+                leftAnkle, rightAnkle, *config);
+          std::string p (prefix);
+          constraints.push_back (NamedConstraint_t
+              (p + std::string ("/relative-com"),
+               numericalConstraints [0]));
+          constraints.push_back (NamedConstraint_t
+              (p + std::string ("/relative-orientation"),
+               numericalConstraints [1]));
+          constraints.push_back (NamedConstraint_t
+              (p + std::string ("/relative-position"),
+               numericalConstraints [2]));
+          constraints.push_back (NamedConstraint_t
+              (p + std::string ("/orientation-left-foot"),
+               numericalConstraints [3]));
+          constraints.push_back (NamedConstraint_t
+              (p + std::string ("/position-left-foot"),
+               numericalConstraints [4]));
+          return constraints;
+        }
+
+        NamedConstraints_t createAlignedCOM (const DevicePtr_t robot,
+            const char* prefix, const ConfigurationPtr_t& config,
+            const JointPtr_t leftAnkle, const JointPtr_t rightAnkle,
+            const CenterOfMassComputationPtr_t comc)
+        {
+          NamedConstraints_t constraints;
+          std::vector <NumericalConstraintPtr_t> numericalConstraints =
+            createSlidingStabilityConstraint (robot, comc,
+                leftAnkle, rightAnkle, *config);
+          std::string p (prefix);
+          constraints.push_back (NamedConstraint_t
+              (p + std::string ("/com-between-feet"),
+               numericalConstraints [0]));
+          constraints.push_back (NamedConstraint_t
+              (p + std::string ("/orientation-right"),
+               numericalConstraints [1]));
+          constraints.push_back (NamedConstraint_t
+              (p + std::string ("/position-right"),
+               numericalConstraints [2]));
+          constraints.push_back (NamedConstraint_t
+              (p + std::string ("/orientation-left"),
+               numericalConstraints [3]));
+          constraints.push_back (NamedConstraint_t
+              (p + std::string ("/position-left"),
+               numericalConstraints [4]));
+          return constraints;
+        }
+      }
 
       static ConfigurationPtr_t dofSeqToConfig
       (ProblemSolverPtr_t problemSolver, const hpp::dofSeq& dofArray)
@@ -70,7 +133,8 @@ namespace hpp {
 
       void Problem::addStaticStabilityConstraints
       (const char* prefix, const hpp::dofSeq& dofArray,
-       const char* leftAnkle, const char* rightAnkle, const char* comName)
+       const char* leftAnkle, const char* rightAnkle, const char* comName,
+       const StaticStabilityType type)
       throw (hpp::Error)
       {
         using model::CenterOfMassComputationPtr_t;
@@ -85,91 +149,36 @@ namespace hpp {
 	  JointPtr_t la = robot->getJointByName (leftAnkle);
 	  JointPtr_t ra = robot->getJointByName (rightAnkle);
           std::string comN (comName);
-	  std::vector <DifferentiableFunctionPtr_t> numericalConstraints;
-          if (comN.compare ("") == 0)
-            numericalConstraints =
-              createSlidingStabilityConstraint (robot, la, ra, *config);
-          else {
-            CenterOfMassComputationPtr_t comc =
-              problemSolver_->centerOfMassComputation (comN);
-            if (!comc)
-              throw Error ("This CenterOfMassComputation does not exist");
-            numericalConstraints = createSlidingStabilityConstraint (robot, 
-                  comc, la, ra, *config);
-          }
-	  std::string p (prefix);
-	  problemSolver_->addNumericalConstraint
-	    (p + std::string ("/relative-com"), numericalConstraints [0]);
-	  problemSolver_->addNumericalConstraint
-	    (p + std::string ("/relative-orientation"),
-	     numericalConstraints [1]);
-	  problemSolver_->addNumericalConstraint
-	     (p + std::string ("/relative-position"), numericalConstraints [2]);
-	  problemSolver_->addNumericalConstraint
-	      (p + std::string ("/orientation-left-foot"),
-	       numericalConstraints [3]);
-	  problemSolver_->addNumericalConstraint
-	       (p + std::string ("/position-left-foot"),
-		numericalConstraints [4]);
-	} catch (const std::exception& exc) {
-	  throw Error (exc.what ());
-	}
-      }
-
-      void Problem::addStabilityConstraints
-      (const char* prefix, const hpp::dofSeq& dofArray,
-       const char* leftAnkle, const char* rightAnkle, const char* comName)
-      throw (hpp::Error)
-      {
-        using model::CenterOfMassComputationPtr_t;
-	using core::DifferentiableFunctionPtr_t;
-	try {
-	  ConfigurationPtr_t config = dofSeqToConfig (problemSolver_, dofArray);
-	  const DevicePtr_t& robot (problemSolver_->robot ());
-	  if (!robot) {
-	    throw Error ("You should set the robot before defining"
-			 " constraints.");
-	  }
-	  JointPtr_t la = robot->getJointByName (leftAnkle);
-	  JointPtr_t ra = robot->getJointByName (rightAnkle);
-          std::string comN (comName);
-	  std::vector <core::NumericalConstraintPtr_t> numericalConstraints;
+          std::vector <DifferentiableFunctionPtr_t> numericalConstraints;
+          CenterOfMassComputationPtr_t comc;
           if (comN.compare ("") == 0) {
-            model::CenterOfMassComputationPtr_t comc = 
-              model::CenterOfMassComputation::create (robot);
+            comc = CenterOfMassComputation::create (robot);
             comc->add (robot->rootJoint ());
             comc->computeMass ();
-            numericalConstraints =
-              createStabilityConstraint (robot, comc, la, ra, *config);
           } else {
-            CenterOfMassComputationPtr_t comc =
-              problemSolver_->centerOfMassComputation (comN);
+            comc = problemSolver_->centerOfMassComputation (comN);
             if (!comc)
               throw Error ("This CenterOfMassComputation does not exist");
-            numericalConstraints = createStabilityConstraint (robot, 
-                  comc, la, ra, *config);
           }
-	  std::string p (prefix);
-	  problemSolver_->addNumericalConstraint
-	    (p + std::string ("/com-between-feet"), numericalConstraints [0]->functionPtr ());
-	  problemSolver_->comparisonType
-	    (p + std::string ("/com-between-feet"), numericalConstraints [0]->comparisonType ());
-	  problemSolver_->addNumericalConstraint
-	     (p + std::string ("/orientation-right"), numericalConstraints [1]->functionPtr ());
-	  problemSolver_->comparisonType
-	     (p + std::string ("/orientation-right"), numericalConstraints [1]->comparisonType ());
-	  problemSolver_->addNumericalConstraint
-	    (p + std::string ("/orientation-left"), numericalConstraints [2]->functionPtr ());
-	  problemSolver_->comparisonType
-	    (p + std::string ("/orientation-left"), numericalConstraints [2]->comparisonType ());
-	  problemSolver_->addNumericalConstraint
-	      (p + std::string ("/position-right"), numericalConstraints [3]->functionPtr ());
-	  problemSolver_->comparisonType
-	      (p + std::string ("/position-right"), numericalConstraints [3]->comparisonType ());
-	  problemSolver_->addNumericalConstraint
-	       (p + std::string ("/position-left"), numericalConstraints [4]->functionPtr ());
-	  problemSolver_->comparisonType
-	       (p + std::string ("/position-left"), numericalConstraints [4]->comparisonType ());
+          NamedConstraints_t nc;
+          switch ( type ) {
+            case hpp::corbaserver::wholebody_step::Problem::SLIDING:
+              nc = createSliding (robot, prefix, config, la, ra, comc);
+              break;
+            case hpp::corbaserver::wholebody_step::Problem::ALIGNED_COM:
+              nc = createAlignedCOM (robot, prefix, config, la, ra, comc);
+              break;
+            default:	
+              throw Error ("Unkown StatticStability type.");
+              break;
+          }
+          for (NamedConstraints_t::const_iterator it = nc.begin ();
+              it != nc.end (); ++it) {
+            problemSolver_->addNumericalConstraint
+              (it->first, it->second->functionPtr ());
+            problemSolver_->comparisonType
+              (it->first, it->second->comparisonType ());
+          }
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}

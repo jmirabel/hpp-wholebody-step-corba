@@ -33,6 +33,31 @@ module hpp {
   module corbaserver {
   module wholebody_step {
   interface Problem {
+
+    /// Type of static stability constraints.
+    enum StaticStabilityType {
+        /// Corresponds to a robot sliding on the floor, the relative position
+        /// ot the feet being constant. It contains five following constraints:
+        /// \li prefix + "/relative-com": relative position of the center of
+        ///                               mass in the left ankle frame,
+        /// \li prefix + "/relative-orientation": relative orientation of the
+        ///                                       feet,
+        /// \li prefix + "/relative-position": relative position of the feet,
+        /// \li prefix + "/orientation-left-foot": orientation of the left foot,
+        /// \li prefix + "/position-left-foot": position of the left foot.
+        SLIDING,
+        /// Corresponds to a robot standing on two feets, the COM between the
+        /// the feet. The feet are constrained to stay on the floor, parallel to
+        /// it. It contains five following constraints:
+        /// \li prefix + "/com-between-feet": The COM projection along z lies
+        ///                                   between the two ankles
+        /// \li prefix + "/orientation-right": orientation of the right foot,
+        /// \li prefix + "/position-right": position of the right foot,
+        /// \li prefix + "/orientation-left": orientation of the left foot,
+        /// \li prefix + "/position-left": position of the left foot.
+        ALIGNED_COM
+    };
+
     /// Create static stability constraints and store into ProblemSolver
     /// \param prefix prefix of the names of the constraint as stored in
     ///        core::ProblemSolver,
@@ -40,40 +65,17 @@ module hpp {
     /// \param leftAnkle, rightAnkle: names of the ankle joints.
     /// \param comName name of the PartialCOM in the problem solver map. Put "" for
     ///        a full COM computations.
+    /// \param type type of static stability constraints you wish to create.
     ///
-    /// Five constraints are created and store with the following keys by
-    /// calling method core::ProblemSolver::addNumericalConstraint:
-    /// \li prefix + "/relative-com": relative position of the center of mass in
-    ///     the left ankle frame,
-    /// \li prefix + "/relative-orientation": relative orientation of the feet,
-    /// \li prefix + "/relative-position": relative position of the feet,
-    /// \li prefix + "/orientation-left-foot": orientation of the left foot,
-    /// \li prefix + "/position-left-foot": position of the left foot.
-    void addStaticStabilityConstraints (in string prefix, in dofSeq dofArray,
-                                        in string leftAnkle, in string rightAnkle,
-                                        in string comName)
-      raises (Error);
-
-    /// Create constraints that ensure that the COM is between the two ankles
-    /// and store into ProblemSolver
-    /// \param prefix prefix of the names of the constraint as stored in
-    ///        core::ProblemSolver,
-    /// \param dofArray input configuration for computing constraint reference,
-    /// \param leftAnkle, rightAnkle: names of the ankle joints.
-    /// \param comName name of the PartialCOM in the problem solver map. Put "" for
-    ///        a full COM computations.
-    ///
-    /// Five constraints are created and store with the following keys by
-    /// calling method core::ProblemSolver::addNumericalConstraint:
-    /// \li prefix + "/com-between-feet": The COM projection along z lies between the
-    ///                                   the two ankles
-    /// \li prefix + "/orientation-right": orientation of the right foot,
-    /// \li prefix + "/position-right": position of the right foot,
-    /// \li prefix + "/orientation-left": orientation of the left foot,
-    /// \li prefix + "/position-left": position of the left foot.
-    void addStabilityConstraints (in string prefix, in dofSeq dofArray,
-                                        in string leftAnkle, in string rightAnkle,
-                                        in string comName)
+    /// The constraints are stored in the core::ProblemSolver constraints map
+    /// and are accessible through the method
+    /// core::ProblemSolver::addNumericalConstraint:
+    void addStaticStabilityConstraints (in string prefix,
+                                        in dofSeq dofArray,
+                                        in string leftAnkle,
+                                        in string rightAnkle,
+                                        in string comName,
+                                        in StaticStabilityType type)
       raises (Error);
 
     /// Generate a goal configuration.
