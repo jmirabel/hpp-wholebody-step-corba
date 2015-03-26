@@ -75,7 +75,7 @@ namespace hpp {
         {
           NamedConstraints_t constraints;
           std::vector <NumericalConstraintPtr_t> numericalConstraints =
-            createSlidingStabilityConstraint (robot, comc,
+            createAlignedCOMStabilityConstraint (robot, comc,
                 leftAnkle, rightAnkle, *config);
           std::string p (prefix);
           constraints.push_back (NamedConstraint_t
