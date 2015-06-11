@@ -22,7 +22,7 @@ typedef hpp::wholebodyStep::ProblemSolver ProblemSolver;
 int
 main (int argc, char* argv[])
 {
-  ProblemSolverPtr_t problemSolver = new ProblemSolver;
+  ProblemSolverPtr_t problemSolver = ProblemSolver::create ();
   CorbaServer corbaServer (problemSolver, argc,
 			   const_cast<const char**> (argv), true);
   WholebodyServer wbsServer (argc, argv, true);
