@@ -14,15 +14,18 @@
 #include <hpp/core/problem-solver.hh>
 #include <hpp/corbaserver/server.hh>
 #include <hpp/corbaserver/wholebody-step/server.hh>
+#include <hpp/wholebody-step/small-steps.hh>
 
 typedef hpp::wholebodyStep::Server WholebodyServer;
 typedef hpp::corbaServer::Server CorbaServer;
 typedef hpp::wholebodyStep::ProblemSolverPtr_t ProblemSolverPtr_t;
 typedef hpp::wholebodyStep::ProblemSolver ProblemSolver;
-int
-main (int argc, char* argv[])
+using hpp::wholebodyStep::SmallSteps;
+
+int main (int argc, char* argv[])
 {
   ProblemSolverPtr_t problemSolver = ProblemSolver::create ();
+  problemSolver->addPathOptimizerType ("SmallSteps", SmallSteps::create);
   CorbaServer corbaServer (problemSolver, argc,
 			   const_cast<const char**> (argv), true);
   WholebodyServer wbsServer (argc, argv, true);
