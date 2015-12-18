@@ -65,6 +65,15 @@ namespace hpp {
           constraints.push_back (NamedConstraint_t
               (p + std::string ("/position-left-foot"),
                numericalConstraints [4]));
+          numericalConstraints = createSlidingStabilityConstraintComplement
+            (robot, leftAnkle, *config);
+          const std::string postfix = "-complement";
+          constraints.push_back (NamedConstraint_t
+              (p + std::string ("/orientation-left-foot") + postfix,
+               numericalConstraints [0]));
+          constraints.push_back (NamedConstraint_t
+              (p + std::string ("/position-left-foot") + postfix,
+               numericalConstraints [1]));
           return constraints;
         }
 
@@ -175,9 +184,7 @@ namespace hpp {
           for (NamedConstraints_t::const_iterator it = nc.begin ();
               it != nc.end (); ++it) {
             problemSolver_->addNumericalConstraint
-              (it->first, it->second->functionPtr ());
-            problemSolver_->comparisonType
-              (it->first, it->second->comparisonType ());
+              (it->first, it->second);
           }
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
