@@ -28,7 +28,7 @@ int main (int argc, char* argv[])
   problemSolver->addPathOptimizerType ("SmallSteps", SmallSteps::create);
   CorbaServer corbaServer (problemSolver, argc,
 			   const_cast<const char**> (argv), true);
-  WholebodyServer wbsServer (argc, argv, true);
+  WholebodyServer wbsServer (argc, const_cast<const char**> (argv), true);
   wbsServer.setProblemSolver (problemSolver);
 
   try {

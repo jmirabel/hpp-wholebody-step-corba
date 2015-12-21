@@ -23,7 +23,7 @@
 
 namespace hpp {
   namespace wholebodyStep {
-    Server::Server (int argc, char *argv[], bool multiThread,
+    Server::Server (int argc, const char* argv[], bool multiThread,
 		    const std::string& poaName) : 
       impl_ (new corba::Server <impl::Problem>
 	     (argc, argv, multiThread, poaName)) {}
