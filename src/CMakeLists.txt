@@ -18,11 +18,30 @@
 SET(IDL_SOURCES
   problem)
 
+# search for python
+FINDPYTHON()
+
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src)
+OMNIIDL_INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/idl)
+FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody-step)
+
 FOREACH(IDL ${IDL_SOURCES})
-  GENERATE_IDL_FILE (${IDL}
+  GENERATE_IDL_CPP (hpp/corbaserver/wholebody-step/${IDL}
     ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/wholebody-step)
+  GENERATE_IDL_PYTHON (hpp/corbaserver/wholebody-step/${IDL}
+    ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/wholebody-step)
+
+  INSTALL(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody-step/${IDL}.hh
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/corbaserver/wholebody-step)
+  INSTALL(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody-step/${IDL}_idl.py
+    DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver/wholebody-step
+    )
 ENDFOREACH()
+
+ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
+ADD_CUSTOM_TARGET(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})
 
 SET(LIBRARY_NAME ${PROJECT_NAME})
 ADD_LIBRARY(${LIBRARY_NAME}
@@ -30,9 +49,11 @@ ADD_LIBRARY(${LIBRARY_NAME}
   server.cc
   problem.impl.hh
   problem.impl.cc
-  problemSK.cc
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody_step/problem_idl.py
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody-step/problemSK.cc
 )
+
+ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_cpp)
+ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
 
 PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-wholebody-step)
 PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-template-corba)
@@ -40,34 +61,6 @@ PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-util)
 
 INSTALL(TARGETS ${LIBRARY_NAME} DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-# search for python
-FINDPYTHON()
-
-# search for omniidl
-FIND_PROGRAM(OMNIIDL omniidl)
-IF(${OMNIIDL} STREQUAL OMNIIDL-NOTFOUND)
-  MESSAGE(FATAL_ERROR "cannot find omniidl.")
-ENDIF(${OMNIIDL} STREQUAL OMNIIDL-NOTFOUND)
-
-FOREACH (IDL ${IDL_SOURCES})
-  ADD_CUSTOM_COMMAND(
-    OUTPUT
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody_step/${IDL}_idl.py
-    COMMAND ${OMNIIDL} ARGS -bpython -Wbpackage=""
-    ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/wholebody-step/${IDL}.idl
-    MAIN_DEPENDENCY
-    ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/wholebody-step/${IDL}.idl
-    )
-  SET_SOURCE_FILES_PROPERTIES(
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody_step/${IDL}_idl.py
-    GENERATED=ON
-    )
-  INSTALL(
-    FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/${IDL}_idl.py
-    DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver/wholebody_step
-    )
-ENDFOREACH()
 INSTALL(
   FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/hpp/corbaserver/wholebody_step/__init__.py
