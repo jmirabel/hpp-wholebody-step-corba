@@ -23,7 +23,7 @@
 # include <omniORB4/CORBA.h>
 # include <hpp/core/problem-solver.hh>
 # include <hpp/corbaserver/wholebody-step/fwd.hh>
-# include "problem.hh"
+# include "hpp/corbaserver/wholebody-step/problem.hh"
 
 namespace hpp {
   namespace wholebodyStep {
