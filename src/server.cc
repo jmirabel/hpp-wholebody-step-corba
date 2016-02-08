@@ -26,12 +26,12 @@ namespace hpp {
     Server::Server (int argc, const char* argv[], bool multiThread,
 		    const std::string& poaName) : 
       impl_ (new corba::Server <impl::Problem>
-	     (argc, argv, multiThread, poaName)) {}
-    Server::~Server () { delete impl_;}
-    void Server::setProblemSolver (ProblemSolverPtr_t problemSolver)
+	     (argc, argv, multiThread, poaName))
     {
-      impl_->implementation ().setProblemSolver (problemSolver);
+      impl_->implementation().setServer (this);
     }
+
+    Server::~Server () { delete impl_;}
 
     /// Start corba server
     void Server::startCorbaServer(const std::string& contextId,
@@ -43,6 +43,16 @@ namespace hpp {
 	  != 0) {
 	HPP_THROW_EXCEPTION (hpp::Exception, "Failed to start corba server.");
       }
+    }
+
+    core::ProblemSolverPtr_t Server::problemSolver ()
+    {
+      return problemSolverMap_->selected();
+    }
+
+    corbaServer::ProblemSolverMapPtr_t Server::problemSolverMap ()
+    {
+      return problemSolverMap_;
     }
   } // namespace wholebodyStep
 } // namespace hpp

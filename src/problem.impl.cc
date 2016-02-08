@@ -17,6 +17,8 @@
 // License along with hpp-wholebody-step-corba.  If not, see
 // <http://www.gnu.org/licenses/>.
 
+#include "problem.impl.hh"
+
 #include <cassert>
 #include <hpp/util/debug.hh>
 #include <hpp/model/humanoid-robot.hh>
@@ -24,7 +26,8 @@
 #include <hpp/core/config-projector.hh>
 #include <hpp/core/constraint-set.hh>
 #include <hpp/wholebody-step/static-stability-constraint.hh>
-#include "problem.impl.hh"
+
+#include <hpp/corbaserver/wholebody-step/server.hh>
 
 namespace hpp {
   namespace wholebodyStep {
@@ -132,12 +135,11 @@ namespace hpp {
 	return config;
       }
 
-      Problem::Problem () : problemSolver_ (0x0) {}
+      Problem::Problem () : server_ (0x0) {}
 
-      void Problem::setProblemSolver
-      (const ProblemSolverPtr_t& problemSolver)
+      ProblemSolverPtr_t Problem::problemSolver ()
       {
-	problemSolver_ = problemSolver;
+	return server_->problemSolver ();
       }
 
       void Problem::addStaticStabilityConstraints
@@ -149,8 +151,8 @@ namespace hpp {
         using model::CenterOfMassComputationPtr_t;
 	using core::DifferentiableFunctionPtr_t;
 	try {
-	  ConfigurationPtr_t config = dofSeqToConfig (problemSolver_, dofArray);
-	  const DevicePtr_t& robot (problemSolver_->robot ());
+	  ConfigurationPtr_t config = dofSeqToConfig (problemSolver(), dofArray);
+	  const DevicePtr_t& robot (problemSolver()->robot ());
 	  if (!robot) {
 	    throw Error ("You should set the robot before defining"
 			 " constraints.");
@@ -165,7 +167,7 @@ namespace hpp {
             comc->add (robot->rootJoint ());
             comc->computeMass ();
           } else {
-            comc = problemSolver_->centerOfMassComputation (comN);
+            comc = problemSolver()->centerOfMassComputation (comN);
             if (!comc)
               throw Error ("This CenterOfMassComputation does not exist");
           }
@@ -183,7 +185,7 @@ namespace hpp {
           }
           for (NamedConstraints_t::const_iterator it = nc.begin ();
               it != nc.end (); ++it) {
-            problemSolver_->addNumericalConstraint
+            problemSolver()->addNumericalConstraint
               (it->first, it->second);
           }
 	} catch (const std::exception& exc) {
@@ -195,7 +197,7 @@ namespace hpp {
       (CORBA::Double, CORBA::Double, CORBA::Double,
        CORBA::UShort) throw (hpp::Error)
       {
-	assert (problemSolver_);
+	assert (problemSolver());
       }
     } // namespace impl
   } // namespace wholebodyStep

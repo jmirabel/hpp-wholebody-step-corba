@@ -37,7 +37,10 @@ namespace hpp {
 
 	Problem ();
 
-	void setProblemSolver (const ProblemSolverPtr_t& problemSolver);
+	void setServer (Server* server)
+        {
+          server_ = server;
+        }
 
 	virtual void addStaticStabilityConstraints
 	(const char* prefix, const hpp::dofSeq& dofArray,
@@ -51,7 +54,8 @@ namespace hpp {
 	  throw (hpp::Error);
 
       private:
-	core::ProblemSolverPtr_t problemSolver_;
+	core::ProblemSolverPtr_t problemSolver();
+        Server* server_;
       }; // class WholebodyStep
     } // namespace impl
   } // namespace wholebodyStep

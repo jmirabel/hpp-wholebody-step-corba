@@ -29,7 +29,7 @@ int main (int argc, char* argv[])
   CorbaServer corbaServer (problemSolver, argc,
 			   const_cast<const char**> (argv), true);
   WholebodyServer wbsServer (argc, const_cast<const char**> (argv), true);
-  wbsServer.setProblemSolver (problemSolver);
+  wbsServer.setProblemSolverMap (corbaServer.problemSolverMap());
 
   try {
     corbaServer.startCorbaServer ();
