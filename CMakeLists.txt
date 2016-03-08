@@ -29,6 +29,8 @@ SET(PROJECT_NAME hpp-wholebody-step-corba)
 SET(PROJECT_DESCRIPTION "Corba server and python client for hpp-wholebody-step")
 SET(PROJECT_URL "http://github.com/laas/hpp-wholebody-step-corba")
 
+SET(CLIENT_ONLY FALSE CACHE BOOL "Set to true to install the client only")
+
 SET(${PROJECT_NAME}_HEADERS
   include/hpp/corbaserver/wholebody-step/server.hh
   include/hpp/corbaserver/wholebody-step/fwd.hh
@@ -44,14 +46,14 @@ IF (HPP_DEBUG)
 ENDIF()
 
 # Search for dependencies.
-ADD_DOC_DEPENDENCY ("hpp-core >= 3")
-ADD_REQUIRED_DEPENDENCY("hpp-wholebody-step >= 3")
-ADD_REQUIRED_DEPENDENCY("hpp-corbaserver >= 3")
-ADD_REQUIRED_DEPENDENCY("hpp-template-corba >= 1.1")
-ADD_REQUIRED_DEPENDENCY("hpp-util >= 3")
-# This dependency ensures us that the intermediate __init__.py files are
-# already installed.
-ADD_REQUIRED_DEPENDENCY("hpp-corbaserver >= 2.1")
+IF (NOT CLIENT_ONLY)
+  ADD_DOC_DEPENDENCY ("hpp-core >= 3")
+  ADD_REQUIRED_DEPENDENCY("hpp-wholebody-step >= 3")
+  ADD_REQUIRED_DEPENDENCY("hpp-corbaserver >= 3")
+  ADD_REQUIRED_DEPENDENCY("hpp-template-corba >= 1.1")
+  ADD_REQUIRED_DEPENDENCY("hpp-util >= 3")
+ENDIF (NOT CLIENT_ONLY)
+
 # Make sure that python submodule is installed in the same prefix as module.
 IF (NOT ${HPP_CORBASERVER_PREFIX} STREQUAL ${CMAKE_INSTALL_PREFIX})
   MESSAGE(WARNING
@@ -65,7 +67,10 @@ ADD_SUBDIRECTORY(src)
 
 CONFIG_FILES (include/hpp/corbaserver/wholebody-step/doc.hh)
 
-PKG_CONFIG_APPEND_LIBS(${PROJECT_NAME})
+
+IF (NOT CLIENT_ONLY)
+  PKG_CONFIG_APPEND_LIBS(${PROJECT_NAME})
+ENDIF (NOT CLIENT_ONLY)
 
 SETUP_PROJECT_FINALIZE()
 SETUP_PROJECT_CPACK()

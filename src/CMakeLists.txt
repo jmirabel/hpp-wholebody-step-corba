@@ -1,5 +1,5 @@
 # Copyright (c) 2011 CNRS
-# Author: Florent Lamiraux
+# Author: Florent Lamiraux, Joseph Mirabel
 #
 # This file is part of hpp-wholebody-step-corba.
 # hpp-wholebody-step-corba is free software: you can redistribute it
@@ -43,23 +43,35 @@ ENDFOREACH()
 ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
 ADD_CUSTOM_TARGET(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})
 
-SET(LIBRARY_NAME ${PROJECT_NAME})
-ADD_LIBRARY(${LIBRARY_NAME}
-  SHARED
-  server.cc
-  problem.impl.hh
-  problem.impl.cc
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody-step/problemSK.cc
-)
+IF (NOT CLIENT_ONLY)
+  SET(LIBRARY_NAME ${PROJECT_NAME})
+  ADD_LIBRARY(${LIBRARY_NAME}
+    SHARED
+    server.cc
+    problem.impl.hh
+    problem.impl.cc
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody-step/problemSK.cc
+    )
 
-ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_cpp)
-ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
+  ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_cpp)
+  ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
 
-PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-wholebody-step)
-PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-template-corba)
-PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-util)
+  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-wholebody-step)
+  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-template-corba)
+  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-util)
 
-INSTALL(TARGETS ${LIBRARY_NAME} DESTINATION ${CMAKE_INSTALL_LIBDIR})
+  INSTALL(TARGETS ${LIBRARY_NAME} DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+  # Standalone corba server
+  ADD_EXECUTABLE (hpp-wholebody-step-server hpp-wholebody-step-corba.cc)
+  TARGET_LINK_LIBRARIES (hpp-wholebody-step-server ${LIBRARY_NAME})
+  PKG_CONFIG_USE_DEPENDENCY(hpp-wholebody-step-server hpp-wholebody-step)
+  PKG_CONFIG_USE_DEPENDENCY(hpp-wholebody-step-server hpp-corbaserver)
+  PKG_CONFIG_USE_DEPENDENCY(hpp-wholebody-step-server hpp-template-corba)
+  PKG_CONFIG_USE_DEPENDENCY(hpp-wholebody-step-server hpp-util)
+
+  INSTALL (TARGETS hpp-wholebody-step-server DESTINATION ${CMAKE_INSTALL_BINDIR})
+ENDIF (NOT CLIENT_ONLY)
 
 INSTALL(
   FILES
@@ -71,13 +83,3 @@ INSTALL(
   ${CMAKE_CURRENT_SOURCE_DIR}/hpp/corbaserver/wholebody_step/client.py
   DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver/wholebody_step
   )
-
-# Standalone corba server
-ADD_EXECUTABLE (hpp-wholebody-step-server hpp-wholebody-step-corba.cc)
-TARGET_LINK_LIBRARIES (hpp-wholebody-step-server ${LIBRARY_NAME})
-PKG_CONFIG_USE_DEPENDENCY(hpp-wholebody-step-server hpp-wholebody-step)
-PKG_CONFIG_USE_DEPENDENCY(hpp-wholebody-step-server hpp-corbaserver)
-PKG_CONFIG_USE_DEPENDENCY(hpp-wholebody-step-server hpp-template-corba)
-PKG_CONFIG_USE_DEPENDENCY(hpp-wholebody-step-server hpp-util)
-
-INSTALL (TARGETS hpp-wholebody-step-server DESTINATION ${CMAKE_INSTALL_BINDIR})
