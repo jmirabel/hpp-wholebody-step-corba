@@ -18,6 +18,7 @@
 from omniORB import CORBA
 import CosNaming
 
+from hpp.corbaserver.client import _getIIOPurl
 from hpp.corbaserver.wholebody_step import Problem
 
 class CorbaError(Exception):
@@ -33,13 +34,16 @@ class Client:
   """
   Connect and create clients for hpp-wholebody-step-planner library.
   """
-  def __init__(self):
+  def __init__(self, url = None):
     """
     Initialize CORBA and create default clients.
     """
     import sys
     self.orb = CORBA.ORB_init (sys.argv, CORBA.ORB_ID)
-    obj = self.orb.resolve_initial_references("NameService")
+    if url is None:
+        obj = self.orb.string_to_object (_getIIOPurl ())
+    else:
+        obj = self.orb.string_to_object (url)
     self.rootContext = obj._narrow(CosNaming.NamingContext)
     if self.rootContext is None:
         raise CorbaError ('failed to narrow the root context')
