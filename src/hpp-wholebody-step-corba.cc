@@ -25,7 +25,7 @@ using hpp::wholebodyStep::SmallSteps;
 int main (int argc, char* argv[])
 {
   ProblemSolverPtr_t problemSolver = ProblemSolver::create ();
-  problemSolver->addPathOptimizerType ("SmallSteps", SmallSteps::create);
+  problemSolver->addPathOptimizerType ("Walkgen", SmallSteps::create);
   CorbaServer corbaServer (problemSolver, argc,
 			   const_cast<const char**> (argv), true);
   WholebodyServer wbsServer (argc, const_cast<const char**> (argv), true);
