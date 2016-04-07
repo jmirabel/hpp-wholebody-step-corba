@@ -36,7 +36,7 @@ FOREACH(IDL ${IDL_SOURCES})
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/corbaserver/wholebody-step)
   INSTALL(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody-step/${IDL}_idl.py
-    DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver/wholebody-step
+    DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver/wholebody_step
     )
 ENDFOREACH()
 
