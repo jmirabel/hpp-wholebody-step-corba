@@ -46,15 +46,15 @@ module hpp {
         /// \li prefix + "/orientation-left-foot": orientation of the left foot,
         /// \li prefix + "/position-left-foot": position of the left foot.
         SLIDING,
-        /// Corresponds to a robot standing on two feets, the COM between the
+        /// Corresponds to a robot sliding on two feets, the COM between the
         /// the feet. The feet are constrained to stay on the floor, parallel to
         /// it. It contains five following constraints:
         /// \li prefix + "/com-between-feet": The COM projection along z lies
         ///                                   between the two ankles
-        /// \li prefix + "/orientation-right": orientation of the right foot,
-        /// \li prefix + "/position-right": position of the right foot,
-        /// \li prefix + "/orientation-left": orientation of the left foot,
-        /// \li prefix + "/position-left": position of the left foot.
+        /// \li prefix + "/orientation-right": right foot remains horizontal,
+        /// \li prefix + "/position-right": height of the right foot,
+        /// \li prefix + "/orientation-left": left foot remains horizontal,
+        /// \li prefix + "/position-left": height of the left foot.
         ALIGNED_COM
     };
 
