@@ -43,6 +43,28 @@ namespace hpp {
           NamedConstraint_t;
         typedef std::list <NamedConstraint_t> NamedConstraints_t;
 
+        NamedConstraints_t createFixed (const DevicePtr_t robot,
+            const char* prefix, const ConfigurationPtr_t& config,
+            const JointPtr_t leftAnkle, const JointPtr_t rightAnkle,
+            const CenterOfMassComputationPtr_t comc)
+        {
+          NamedConstraints_t constraints;
+          std::vector <NumericalConstraintPtr_t> numericalConstraints =
+            createStaticStabilityConstraint (robot, comc, leftAnkle, rightAnkle,
+					     *config, false);
+          std::string p (prefix);
+          constraints.push_back (NamedConstraint_t
+              (p + std::string ("/relative-com"),
+               numericalConstraints [0]));
+          constraints.push_back (NamedConstraint_t
+              (p + std::string ("/pose-left-foot"),
+               numericalConstraints [1]));
+          constraints.push_back (NamedConstraint_t
+              (p + std::string ("/pose-right-foot"),
+               numericalConstraints [2]));
+          return constraints;
+        }
+
         NamedConstraints_t createSliding (const DevicePtr_t robot,
             const char* prefix, const ConfigurationPtr_t& config,
             const JointPtr_t leftAnkle, const JointPtr_t rightAnkle,
@@ -50,8 +72,8 @@ namespace hpp {
         {
           NamedConstraints_t constraints;
           std::vector <NumericalConstraintPtr_t> numericalConstraints =
-            createSlidingStabilityConstraint (robot, comc,
-                leftAnkle, rightAnkle, *config);
+            createStaticStabilityConstraint (robot, comc, leftAnkle, rightAnkle,
+					     *config, true);
           std::string p (prefix);
           constraints.push_back (NamedConstraint_t
               (p + std::string ("/relative-com"),
@@ -83,28 +105,23 @@ namespace hpp {
         NamedConstraints_t createAlignedCOM (const DevicePtr_t robot,
             const char* prefix, const ConfigurationPtr_t& config,
             const JointPtr_t leftAnkle, const JointPtr_t rightAnkle,
-            const CenterOfMassComputationPtr_t comc)
+	    const CenterOfMassComputationPtr_t comc, bool sliding)
         {
           NamedConstraints_t constraints;
           std::vector <NumericalConstraintPtr_t> numericalConstraints =
             createAlignedCOMStabilityConstraint (robot, comc,
-                leftAnkle, rightAnkle, *config);
+						 leftAnkle, rightAnkle, *config,
+						 sliding);
           std::string p (prefix);
           constraints.push_back (NamedConstraint_t
-              (p + std::string ("/com-between-feet"),
-               numericalConstraints [0]));
+				 (p + std::string ("/com-between-feet"),
+				  numericalConstraints [0]));
           constraints.push_back (NamedConstraint_t
-              (p + std::string ("/orientation-right"),
-               numericalConstraints [1]));
+				 (p + std::string ("/pose-right-foot"),
+				  numericalConstraints [1]));
           constraints.push_back (NamedConstraint_t
-              (p + std::string ("/position-right"),
-               numericalConstraints [2]));
-          constraints.push_back (NamedConstraint_t
-              (p + std::string ("/orientation-left"),
-               numericalConstraints [3]));
-          constraints.push_back (NamedConstraint_t
-              (p + std::string ("/position-left"),
-               numericalConstraints [4]));
+				 (p + std::string ("/pose-left-foot"),
+				  numericalConstraints [2]));
           return constraints;
         }
       }
@@ -176,11 +193,18 @@ namespace hpp {
             case hpp::corbaserver::wholebody_step::Problem::SLIDING:
               nc = createSliding (robot, prefix, config, la, ra, comc);
               break;
-            case hpp::corbaserver::wholebody_step::Problem::ALIGNED_COM:
-              nc = createAlignedCOM (robot, prefix, config, la, ra, comc);
+            case hpp::corbaserver::wholebody_step::Problem::SLIDING_ALIGNED_COM:
+              nc = createAlignedCOM (robot, prefix, config, la, ra, comc, true);
+              break;
+	    case hpp::corbaserver::wholebody_step::Problem::FIXED_ON_THE_GROUND:
+	      nc = createFixed (robot, prefix, config, la, ra, comc);
+              break;
+            case hpp::corbaserver::wholebody_step::Problem::FIXED_ALIGNED_COM:
+              nc = createAlignedCOM (robot, prefix, config, la, ra, comc,
+				     false);
               break;
             default:	
-              throw Error ("Unkown StatticStability type.");
+              throw Error ("Unkown StaticStability type.");
               break;
           }
           for (NamedConstraints_t::const_iterator it = nc.begin ();

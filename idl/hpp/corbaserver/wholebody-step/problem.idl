@@ -55,7 +55,12 @@ module hpp {
         /// \li prefix + "/position-right": height of the right foot,
         /// \li prefix + "/orientation-left": left foot remains horizontal,
         /// \li prefix + "/position-left": height of the left foot.
-        ALIGNED_COM
+        SLIDING_ALIGNED_COM,
+	/// Same as SLIDING except that the feet are fixed on the ground
+	FIXED_ON_THE_GROUND,
+	/// Same as SLIDING_ALIGNED_COM, except that the feet are fixed on the
+	/// ground
+	FIXED_ALIGNED_COM
     };
 
     /// Create static stability constraints and store into ProblemSolver
