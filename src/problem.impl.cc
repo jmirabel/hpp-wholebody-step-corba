@@ -21,10 +21,10 @@
 
 #include <cassert>
 #include <hpp/util/debug.hh>
-#include <hpp/model/humanoid-robot.hh>
-#include <hpp/model/center-of-mass-computation.hh>
+#include <hpp/pinocchio/center-of-mass-computation.hh>
 #include <hpp/core/config-projector.hh>
 #include <hpp/core/constraint-set.hh>
+#include <hpp/core/problem-solver.hh>
 #include <hpp/wholebody-step/static-stability-constraint.hh>
 
 #include <hpp/corbaserver/wholebody-step/server.hh>
@@ -35,7 +35,7 @@ namespace hpp {
     using hpp::wholebodyStep::createAlignedCOMStabilityConstraint;
     using hpp::core::ConstraintSetPtr_t;
     using hpp::core::ConfigProjectorPtr_t;
-    using hpp::model::CenterOfMassComputation;
+    using hpp::pinocchio::CenterOfMassComputation;
 
     namespace impl {
       namespace {
@@ -129,7 +129,7 @@ namespace hpp {
       static ConfigurationPtr_t dofSeqToConfig
       (ProblemSolverPtr_t problemSolver, const hpp::dofSeq& dofArray)
       {
-	size_type configDim = (size_type) dofArray.length();
+	CORBA::ULong configDim = dofArray.length();
 	ConfigurationPtr_t config (new Configuration_t (configDim));
 
 	// Get robot in hppPlanner object.
@@ -146,7 +146,7 @@ namespace hpp {
 	}
 
 	// Fill dof vector with dof array.
-	for (size_type iDof=0; iDof < configDim; ++iDof) {
+	for (CORBA::ULong iDof=0; iDof < configDim; ++iDof) {
 	  (*config) [iDof] = dofArray [iDof];
 	}
 	return config;
@@ -165,7 +165,7 @@ namespace hpp {
        const StaticStabilityType type)
       throw (hpp::Error)
       {
-        using model::CenterOfMassComputationPtr_t;
+        using pinocchio::CenterOfMassComputationPtr_t;
 	using core::DifferentiableFunctionPtr_t;
 	try {
 	  ConfigurationPtr_t config = dofSeqToConfig (problemSolver(), dofArray);
@@ -182,7 +182,6 @@ namespace hpp {
           if (comN.compare ("") == 0) {
             comc = CenterOfMassComputation::create (robot);
             comc->add (robot->rootJoint ());
-            comc->computeMass ();
           } else {
             comc = problemSolver()->centerOfMassComputation (comN);
             if (!comc)

@@ -21,9 +21,8 @@
 # define HPP_WHOLEBODY_STEP_CORBA_WHOLEBODY_STEP_HH
 
 # include <omniORB4/CORBA.h>
-# include <hpp/core/problem-solver.hh>
 # include <hpp/corbaserver/wholebody-step/fwd.hh>
-# include "hpp/corbaserver/wholebody-step/problem.hh"
+# include <hpp/corbaserver/wholebody-step/problem.hh>
 
 namespace hpp {
   namespace wholebodyStep {
