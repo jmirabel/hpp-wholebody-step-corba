@@ -46,10 +46,11 @@ IF (HPP_DEBUG)
 ENDIF()
 
 # Search for dependencies.
+ADD_REQUIRED_DEPENDENCY("omniORB4 >= 4.1.4")
+ADD_REQUIRED_DEPENDENCY("hpp-corbaserver >= 4")
 IF (NOT CLIENT_ONLY)
   ADD_DOC_DEPENDENCY ("hpp-core >= 3")
   ADD_REQUIRED_DEPENDENCY("hpp-wholebody-step >= 4")
-  ADD_REQUIRED_DEPENDENCY("hpp-corbaserver >= 4")
   ADD_REQUIRED_DEPENDENCY("hpp-template-corba >= 1.1")
   ADD_REQUIRED_DEPENDENCY("hpp-util >= 3.2")
 ENDIF (NOT CLIENT_ONLY)
@@ -67,10 +68,7 @@ ADD_SUBDIRECTORY(src)
 
 CONFIG_FILES (include/hpp/corbaserver/wholebody-step/doc.hh)
 
-
-IF (NOT CLIENT_ONLY)
-  PKG_CONFIG_APPEND_LIBS(${PROJECT_NAME})
-ENDIF (NOT CLIENT_ONLY)
+PKG_CONFIG_APPEND_LIBS(${PROJECT_NAME})
 
 SETUP_PROJECT_FINALIZE()
 SETUP_PROJECT_CPACK()

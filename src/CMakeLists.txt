@@ -15,6 +15,7 @@
 # hpp-wholebody-step-corba.  If not, see
 # <http://www.gnu.org/licenses/>.
 
+SET(LIBRARY_NAME ${PROJECT_NAME})
 SET(IDL_SOURCES
   problem)
 
@@ -42,8 +43,10 @@ FOREACH(IDL ${IDL_SOURCES})
     )
 ENDFOREACH()
 
+ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
+ADD_CUSTOM_TARGET(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})
+
 IF (NOT CLIENT_ONLY)
-  SET(LIBRARY_NAME ${PROJECT_NAME})
   ADD_LIBRARY(${LIBRARY_NAME}
     SHARED
     server.cc
@@ -51,11 +54,6 @@ IF (NOT CLIENT_ONLY)
     problem.impl.cc
     ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody-step/problemSK.cc
     )
-
-  ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
-  ADD_CUSTOM_TARGET(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})
-  ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_cpp)
-  ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
 
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-wholebody-step)
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-template-corba)
@@ -73,9 +71,19 @@ IF (NOT CLIENT_ONLY)
 
   INSTALL (TARGETS hpp-wholebody-step-server DESTINATION ${CMAKE_INSTALL_BINDIR})
 ELSE (NOT CLIENT_ONLY)
-  ADD_CUSTOM_TARGET(generate_idl_cpp ALL DEPENDS ${ALL_IDL_CPP_STUBS})
-  ADD_CUSTOM_TARGET(generate_idl_python ALL DEPENDS ${ALL_IDL_PYTHON_STUBS})
+  ADD_LIBRARY(${LIBRARY_NAME}
+    SHARED
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody-step/problem.hh
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody-step/problemSK.cc
+    )
+
+  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} omniORB4)
+
+  INSTALL(TARGETS ${LIBRARY_NAME} DESTINATION ${CMAKE_INSTALL_LIBDIR})
 ENDIF (NOT CLIENT_ONLY)
+
+ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_cpp)
+ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
 
 INSTALL(
   FILES
