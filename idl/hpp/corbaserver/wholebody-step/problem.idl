@@ -20,16 +20,9 @@
 #ifndef HPP_WHOLEBODY_STEP_CORBA_IDL
 # define HPP_WHOLEBODY_STEP_CORBA_IDL
 
-module hpp {
-  /// Corba exception travelling through the Corba channel
-  exception Error
-  {
-    string msg;
-  };
-  /// Robot configuration is defined by a sequence of dof value.
-  typedef sequence<double> dofSeq;
-  typedef sequence<dofSeq> dofSeqSeq;
+# include <hpp/corbaserver/common.idl>
 
+module hpp {
   module corbaserver {
   module wholebody_step {
   interface Problem {
@@ -66,7 +59,7 @@ module hpp {
     /// Create static stability constraints and store into ProblemSolver
     /// \param prefix prefix of the names of the constraint as stored in
     ///        core::ProblemSolver,
-    /// \param dofArray input configuration for computing constraint reference,
+    /// \param floatArray input configuration for computing constraint reference,
     /// \param leftAnkle, rightAnkle: names of the ankle joints.
     /// \param comName name of the PartialCOM in the problem solver map. Put "" for
     ///        a full COM computations.
@@ -76,7 +69,7 @@ module hpp {
     /// and are accessible through the method
     /// core::ProblemSolver::addNumericalConstraint:
     void addStaticStabilityConstraints (in string prefix,
-                                        in dofSeq dofArray,
+                                        in floatSeq floatArray,
                                         in string leftAnkle,
                                         in string rightAnkle,
                                         in string comName,

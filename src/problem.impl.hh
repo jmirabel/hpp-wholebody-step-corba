@@ -42,7 +42,7 @@ namespace hpp {
         }
 
 	virtual void addStaticStabilityConstraints
-	(const char* prefix, const hpp::dofSeq& dofArray,
+	(const char* prefix, const hpp::floatSeq& floatArray,
 	 const char* leftAnkle, const char* rightAnkle, const char* comName,
          const StaticStabilityType type)
         throw (hpp::Error);

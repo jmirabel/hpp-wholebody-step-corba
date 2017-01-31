@@ -21,10 +21,15 @@
 
 #include <cassert>
 #include <hpp/util/debug.hh>
+
 #include <hpp/pinocchio/center-of-mass-computation.hh>
+
 #include <hpp/core/config-projector.hh>
 #include <hpp/core/constraint-set.hh>
 #include <hpp/core/problem-solver.hh>
+
+#include <hpp/corbaserver/conversions.hh>
+
 #include <hpp/wholebody-step/static-stability-constraint.hh>
 
 #include <hpp/corbaserver/wholebody-step/server.hh>
@@ -36,6 +41,7 @@ namespace hpp {
     using hpp::core::ConstraintSetPtr_t;
     using hpp::core::ConfigProjectorPtr_t;
     using hpp::pinocchio::CenterOfMassComputation;
+    using hpp::corbaServer::floatSeqToConfigPtr;
 
     namespace impl {
       namespace {
@@ -126,32 +132,6 @@ namespace hpp {
         }
       }
 
-      static ConfigurationPtr_t dofSeqToConfig
-      (ProblemSolverPtr_t problemSolver, const hpp::dofSeq& dofArray)
-      {
-	CORBA::ULong configDim = dofArray.length();
-	ConfigurationPtr_t config (new Configuration_t (configDim));
-
-	// Get robot in hppPlanner object.
-	DevicePtr_t robot = problemSolver->robot ();
-
-	// Compare size of input array with number of degrees of freedom of
-	// robot.
-	if (configDim != robot->configSize ()) {
-	  hppDout (error, "robot configSize (" << robot->configSize ()
-		   << ") is different from config size ("
-		   << configDim << ")");
-	  throw std::runtime_error
-	    ("robot nb dof is different from config size");
-	}
-
-	// Fill dof vector with dof array.
-	for (CORBA::ULong iDof=0; iDof < configDim; ++iDof) {
-	  (*config) [iDof] = dofArray [iDof];
-	}
-	return config;
-      }
-
       Problem::Problem () : server_ (0x0) {}
 
       ProblemSolverPtr_t Problem::problemSolver ()
@@ -160,7 +140,7 @@ namespace hpp {
       }
 
       void Problem::addStaticStabilityConstraints
-      (const char* prefix, const hpp::dofSeq& dofArray,
+      (const char* prefix, const hpp::floatSeq& dofArray,
        const char* leftAnkle, const char* rightAnkle, const char* comName,
        const StaticStabilityType type)
       throw (hpp::Error)
@@ -168,12 +148,12 @@ namespace hpp {
         using pinocchio::CenterOfMassComputationPtr_t;
 	using core::DifferentiableFunctionPtr_t;
 	try {
-	  ConfigurationPtr_t config = dofSeqToConfig (problemSolver(), dofArray);
 	  const DevicePtr_t& robot (problemSolver()->robot ());
 	  if (!robot) {
 	    throw Error ("You should set the robot before defining"
 			 " constraints.");
 	  }
+	  ConfigurationPtr_t config = floatSeqToConfigPtr (robot, dofArray, true);
 	  JointPtr_t la = robot->getJointByName (leftAnkle);
 	  JointPtr_t ra = robot->getJointByName (rightAnkle);
           std::string comN (comName);
