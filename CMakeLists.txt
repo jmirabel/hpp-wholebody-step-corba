@@ -48,10 +48,10 @@ ENDIF()
 # Search for dependencies.
 IF (NOT CLIENT_ONLY)
   ADD_DOC_DEPENDENCY ("hpp-core >= 3")
-  ADD_REQUIRED_DEPENDENCY("hpp-wholebody-step >= 3")
-  ADD_REQUIRED_DEPENDENCY("hpp-corbaserver >= 3")
+  ADD_REQUIRED_DEPENDENCY("hpp-wholebody-step >= 4")
+  ADD_REQUIRED_DEPENDENCY("hpp-corbaserver >= 4")
   ADD_REQUIRED_DEPENDENCY("hpp-template-corba >= 1.1")
-  ADD_REQUIRED_DEPENDENCY("hpp-util >= 3")
+  ADD_REQUIRED_DEPENDENCY("hpp-util >= 3.2")
 ENDIF (NOT CLIENT_ONLY)
 
 # Make sure that python submodule is installed in the same prefix as module.
