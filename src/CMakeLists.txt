@@ -43,6 +43,10 @@ FOREACH(IDL ${IDL_SOURCES})
     )
 ENDFOREACH()
 
+# Generate and install common_idl.py from hpp.corbaserver
+GENERATE_IDL_PYTHON (hpp/corbaserver/wholebody-step/common
+  ${HPP_CORBASERVER_DATAROOTDIR}/idl/hpp/corbaserver)
+
 ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
 ADD_CUSTOM_TARGET(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})
 
@@ -88,6 +92,7 @@ ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
 INSTALL(
   FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/hpp/corbaserver/wholebody_step/__init__.py
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody-step/common_idl.py
   DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver/wholebody_step
   )
 INSTALL(
