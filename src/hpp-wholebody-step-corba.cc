@@ -22,14 +22,13 @@ typedef hpp::wholebodyStep::ProblemSolverPtr_t ProblemSolverPtr_t;
 typedef hpp::wholebodyStep::ProblemSolver ProblemSolver;
 using hpp::wholebodyStep::SmallSteps;
 
-int main (int argc, char* argv[])
+int main (int argc, const char* argv[])
 {
   ProblemSolverPtr_t problemSolver = ProblemSolver::create ();
   hpp::core::PathOptimizerBuilder_t optimizer (SmallSteps::create);
   problemSolver->add ("Walkgen", optimizer);
-  CorbaServer corbaServer (problemSolver, argc,
-			   const_cast<const char**> (argv), true);
-  WholebodyServer wbsServer (argc, const_cast<const char**> (argv), true);
+  CorbaServer corbaServer (problemSolver, argc, argv, true);
+  WholebodyServer wbsServer (argc, argv, true);
   wbsServer.setProblemSolverMap (corbaServer.problemSolverMap());
 
   try {
