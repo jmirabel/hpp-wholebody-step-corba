@@ -34,7 +34,7 @@ class Client:
   """
   Connect and create clients for hpp-wholebody-step-planner library.
   """
-  def __init__(self, url = None):
+  def __init__(self, url = None, postContextId = ""):
     """
     Initialize CORBA and create default clients.
     """
@@ -48,7 +48,7 @@ class Client:
     if self.rootContext is None:
         raise CorbaError ('failed to narrow the root context')
 
-    name = [CosNaming.NameComponent ("hpp", "corbaserver"),
+    name = [CosNaming.NameComponent ("hpp" + postContextId, "corbaserver"),
             CosNaming.NameComponent ("wholebodyStep", "problem")]
     
     try:
