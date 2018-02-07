@@ -41,6 +41,8 @@ FOREACH(IDL ${IDL_SOURCES})
     FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody-step/${IDL}_idl.py
     DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver/wholebody_step
     )
+  INSTALL(FILES ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/wholebody-step/${IDL}.idl
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl/hpp/corbaserver/wholebody-step)
 ENDFOREACH()
 
 # Generate and install common_idl.py from hpp.corbaserver
