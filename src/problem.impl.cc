@@ -163,9 +163,9 @@ namespace hpp {
             comc = CenterOfMassComputation::create (robot);
             comc->add (robot->rootJoint ());
           } else {
-            comc = problemSolver()->centerOfMassComputation (comN);
-            if (!comc)
+            if (!problemSolver()->centerOfMassComputations.has(comN))
               throw Error ("This CenterOfMassComputation does not exist");
+            comc = problemSolver()->centerOfMassComputations.get(comN);
           }
           NamedConstraints_t nc;
           switch ( type ) {
