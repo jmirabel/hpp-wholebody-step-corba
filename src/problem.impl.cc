@@ -24,6 +24,8 @@
 
 #include <hpp/pinocchio/center-of-mass-computation.hh>
 
+#include <hpp/constraints/implicit.hh>
+
 #include <hpp/core/config-projector.hh>
 #include <hpp/core/constraint-set.hh>
 #include <hpp/core/problem-solver.hh>
@@ -42,10 +44,11 @@ namespace hpp {
     using hpp::core::ConfigProjectorPtr_t;
     using hpp::pinocchio::CenterOfMassComputation;
     using hpp::corbaServer::floatSeqToConfigPtr;
+    using hpp::constraints::ImplicitPtr_t;
 
     namespace impl {
       namespace {
-        typedef std::pair <std::string, NumericalConstraintPtr_t>
+        typedef std::pair <std::string, ImplicitPtr_t>
           NamedConstraint_t;
         typedef std::list <NamedConstraint_t> NamedConstraints_t;
 
@@ -55,7 +58,7 @@ namespace hpp {
             const CenterOfMassComputationPtr_t comc)
         {
           NamedConstraints_t constraints;
-          std::vector <NumericalConstraintPtr_t> numericalConstraints =
+          std::vector <ImplicitPtr_t> numericalConstraints =
             createStaticStabilityConstraint (robot, comc, leftAnkle, rightAnkle,
 					     *config, false);
           std::string p (prefix);
@@ -77,7 +80,7 @@ namespace hpp {
             const CenterOfMassComputationPtr_t comc)
         {
           NamedConstraints_t constraints;
-          std::vector <NumericalConstraintPtr_t> numericalConstraints =
+          std::vector <ImplicitPtr_t> numericalConstraints =
             createStaticStabilityConstraint (robot, comc, leftAnkle, rightAnkle,
 					     *config, true);
           std::string p (prefix);
@@ -114,7 +117,7 @@ namespace hpp {
 	    const CenterOfMassComputationPtr_t comc, bool sliding)
         {
           NamedConstraints_t constraints;
-          std::vector <NumericalConstraintPtr_t> numericalConstraints =
+          std::vector <ImplicitPtr_t> numericalConstraints =
             createAlignedCOMStabilityConstraint (robot, comc,
 						 leftAnkle, rightAnkle, *config,
 						 sliding);
