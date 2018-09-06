@@ -27,7 +27,9 @@ int main (int argc, const char* argv[])
   ProblemSolverPtr_t problemSolver = ProblemSolver::create ();
   problemSolver->pathOptimizers.add ("Walkgen", SmallSteps::create);
   CorbaServer corbaServer (problemSolver, argc, argv, true);
-  WholebodyServer wbsServer (argc, argv, true);
+
+  const bool multithread = corbaServer.multiThread();
+  WholebodyServer wbsServer (argc, argv, multithread);
   wbsServer.setProblemSolverMap (corbaServer.problemSolverMap());
 
   try {
