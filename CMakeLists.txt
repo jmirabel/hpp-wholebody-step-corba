@@ -21,6 +21,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET(CXX_DISABLE_WERROR true)
 
 INCLUDE(cmake/base.cmake)
+INCLUDE(cmake/hpp.cmake)
 INCLUDE(cmake/cpack.cmake)
 INCLUDE(cmake/idl.cmake)
 INCLUDE(cmake/python.cmake)
@@ -37,13 +38,7 @@ SET(${PROJECT_NAME}_HEADERS
 )
 SET(CUSTOM_HEADER_DIR hpp/corbaserver/wholebody-step)
 
-SETUP_PROJECT()
-
-# Activate hpp-util logging if requested
-SET (HPP_DEBUG FALSE CACHE BOOL "trigger hpp-util debug output")
-IF (HPP_DEBUG)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHPP_DEBUG")
-ENDIF()
+SETUP_HPP_PROJECT()
 
 # Search for dependencies.
 ADD_REQUIRED_DEPENDENCY("omniORB4 >= 4.1.4")
@@ -70,5 +65,5 @@ CONFIG_FILES (include/hpp/corbaserver/wholebody-step/doc.hh)
 
 PKG_CONFIG_APPEND_LIBS(${PROJECT_NAME})
 
-SETUP_PROJECT_FINALIZE()
+SETUP_HPP_PROJECT_FINALIZE()
 SETUP_PROJECT_CPACK()
