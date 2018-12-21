@@ -18,6 +18,7 @@
 // <http://www.gnu.org/licenses/>.
 
 /// \mainpage
+/// \anchor hpp_wholebody_step_corba_documentation
 ///
 /// \section hpp_wholebody_step_corba_intro Introduction
 ///
