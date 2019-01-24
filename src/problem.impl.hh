@@ -47,11 +47,6 @@ namespace hpp {
          const StaticStabilityType type)
         throw (hpp::Error);
 
-	virtual void
-	generateGoalConfig (CORBA::Double x, CORBA::Double y, CORBA::Double z,
-			    CORBA::UShort nbConfig)
-	  throw (hpp::Error);
-
       private:
 	core::ProblemSolverPtr_t problemSolver();
         Server* server_;

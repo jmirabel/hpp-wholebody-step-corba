@@ -75,12 +75,6 @@ module hpp {
                                         in string comName,
                                         in StaticStabilityType type)
       raises (Error);
-
-    /// Generate a goal configuration.
-    /// \param x, y, z: desired position of the end effector (right hand)
-    /// \param nbConfig Number of goal configurations to generate.
-    void generateGoalConfig (in double x, in double y, in double z,
-			     in unsigned short nbConfig) raises (Error);
   }; //interface Problem
   }; // module wholebody_step
   }; // module corbaserver

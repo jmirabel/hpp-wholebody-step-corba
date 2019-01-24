@@ -198,13 +198,6 @@ namespace hpp {
 	  throw Error (exc.what ());
 	}
       }
-
-      void Problem::generateGoalConfig
-      (CORBA::Double, CORBA::Double, CORBA::Double,
-       CORBA::UShort) throw (hpp::Error)
-      {
-	assert (problemSolver());
-      }
     } // namespace impl
   } // namespace wholebodyStep
 } // namespace hpp
