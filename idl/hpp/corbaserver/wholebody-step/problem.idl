@@ -28,6 +28,10 @@ module hpp {
   interface Problem {
 
     /// Type of static stability constraints.
+    /// \deprecated Use
+    /// hpp::corbaserver::robot::HumanoidRobot::createSlidingStabilityConstraint
+    /// hpp::corbaserver::robot::HumanoidRobot::createStaticStabilityConstraint
+    /// hpp::corbaserver::robot::HumanoidRobot::createAlignedCOMStabilityConstraint
     enum StaticStabilityType {
         /// Corresponds to a robot sliding on the floor, the relative position
         /// ot the feet being constant. It contains five following constraints:
@@ -38,6 +42,9 @@ module hpp {
         /// \li prefix + "/relative-position": relative position of the feet,
         /// \li prefix + "/orientation-left-foot": orientation of the left foot,
         /// \li prefix + "/position-left-foot": position of the left foot.
+        ///
+        /// \deprecated Use
+        /// hpp::corbaserver::robot::HumanoidRobot::createSlidingStabilityConstraint
         SLIDING,
         /// Corresponds to a robot sliding on two feets, the COM between the
         /// the feet. The feet are constrained to stay on the floor, parallel to
@@ -48,26 +55,25 @@ module hpp {
         /// \li prefix + "/position-right": height of the right foot,
         /// \li prefix + "/orientation-left": left foot remains horizontal,
         /// \li prefix + "/position-left": height of the left foot.
+        ///
+        /// \deprecated Use
+        /// hpp::corbaserver::robot::HumanoidRobot::createAlignedCOMStabilityConstraint
         SLIDING_ALIGNED_COM,
 	/// Same as SLIDING except that the feet are fixed on the ground
+        /// \deprecated Use
+        /// hpp::corbaserver::robot::HumanoidRobot::createStaticStabilityConstraint
 	FIXED_ON_THE_GROUND,
 	/// Same as SLIDING_ALIGNED_COM, except that the feet are fixed on the
 	/// ground
+        /// \deprecated Use
+        /// hpp::corbaserver::robot::HumanoidRobot::createAlignedCOMStabilityConstraint
 	FIXED_ALIGNED_COM
     };
 
-    /// Create static stability constraints and store into ProblemSolver
-    /// \param prefix prefix of the names of the constraint as stored in
-    ///        core::ProblemSolver,
-    /// \param floatArray input configuration for computing constraint reference,
-    /// \param leftAnkle, rightAnkle: names of the ankle joints.
-    /// \param comName name of the PartialCOM in the problem solver map. Put "" for
-    ///        a full COM computations.
-    /// \param type type of static stability constraints you wish to create.
-    ///
-    /// The constraints are stored in the core::ProblemSolver constraints map
-    /// and are accessible through the method
-    /// core::ProblemSolver::addNumericalConstraint:
+    /// \deprecated Use
+    /// hpp::corbaserver::robot::HumanoidRobot::createSlidingStabilityConstraint
+    /// hpp::corbaserver::robot::HumanoidRobot::createStaticStabilityConstraint
+    /// hpp::corbaserver::robot::HumanoidRobot::createAlignedCOMStabilityConstraint
     void addStaticStabilityConstraints (in string prefix,
                                         in floatSeq floatArray,
                                         in string leftAnkle,
@@ -75,12 +81,6 @@ module hpp {
                                         in string comName,
                                         in StaticStabilityType type)
       raises (Error);
-
-    /// Generate a goal configuration.
-    /// \param x, y, z: desired position of the end effector (right hand)
-    /// \param nbConfig Number of goal configurations to generate.
-    void generateGoalConfig (in double x, in double y, in double z,
-			     in unsigned short nbConfig) raises (Error);
   }; //interface Problem
   }; // module wholebody_step
   }; // module corbaserver
