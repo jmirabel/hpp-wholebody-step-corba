@@ -18,9 +18,9 @@
 // <http://www.gnu.org/licenses/>.
 
 #ifndef HPP_WHOLEBODY_STEP_CORBA_IDL
-# define HPP_WHOLEBODY_STEP_CORBA_IDL
+#define HPP_WHOLEBODY_STEP_CORBA_IDL
 
-# include <hpp/corbaserver/common.idl>
+#include <hpp/corbaserver/common.idl>
 
 module hpp {
   module corbaserver {
