@@ -52,20 +52,24 @@ GENERATE_IDL_PYTHON (hpp/corbaserver/wholebody-step/common
 ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
 ADD_CUSTOM_TARGET(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})
 
+ADD_LIBRARY(${LIBRARY_NAME}
+  SHARED
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody-step/problem.hh
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody-step/problemSK.cc
+  )
+
+PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} omniORB4)
+PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-corbaserver)
+
+INSTALL(TARGETS ${LIBRARY_NAME} DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
 IF (NOT CLIENT_ONLY)
-  ADD_LIBRARY(${LIBRARY_NAME}
-    SHARED
-    server.cc
-    problem.impl.hh
-    problem.impl.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody-step/problemSK.cc
-    )
-
-  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-wholebody-step)
-  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-template-corba)
-  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-util)
-
-  INSTALL(TARGETS ${LIBRARY_NAME} DESTINATION ${CMAKE_INSTALL_LIBDIR})
+  INCLUDE(${HPP_CORBASERVER_CMAKE_PLUGIN})
+  HPP_ADD_SERVER_PLUGIN(wholebody-step-corba
+    SOURCES server.cc problem.impl.cc
+    LINK_DEPENDENCIES ${LIBRARY_NAME}
+    PKG_CONFIG_DEPENDENCIES omniORB4 hpp-corbaserver
+    hpp-wholebody-step hpp-util hpp-template-corba)
 
   # Standalone corba server
   ADD_EXECUTABLE (hpp-wholebody-step-server hpp-wholebody-step-corba.cc)
@@ -77,16 +81,6 @@ IF (NOT CLIENT_ONLY)
 
   INSTALL (TARGETS hpp-wholebody-step-server DESTINATION ${CMAKE_INSTALL_BINDIR})
 ELSE (NOT CLIENT_ONLY)
-  ADD_LIBRARY(${LIBRARY_NAME}
-    SHARED
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody-step/problem.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/wholebody-step/problemSK.cc
-    )
-
-  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} omniORB4)
-  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-corbaserver)
-
-  INSTALL(TARGETS ${LIBRARY_NAME} DESTINATION ${CMAKE_INSTALL_LIBDIR})
 ENDIF (NOT CLIENT_ONLY)
 
 ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_cpp)

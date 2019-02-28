@@ -23,36 +23,32 @@
 
 namespace hpp {
   namespace wholebodyStep {
-    Server::Server (int argc, const char* argv[], bool multiThread,
-		    const std::string& poaName) : 
-      impl_ (new corba::Server <impl::Problem>
-	     (argc, argv, multiThread, poaName))
-    {
-      impl_->implementation().setServer (this);
-    }
+    Server::Server (bool multiThread)
+      : corbaServer::ServerPlugin (multiThread)
+      , impl_ (NULL)
+    {}
 
-    Server::~Server () { delete impl_;}
+    Server::~Server () { if (impl_) delete impl_;}
+
+    std::string Server::name () const
+    {
+      static const std::string n ("hpp-wholebody-step");
+      return n;
+    }
 
     /// Start corba server
     void Server::startCorbaServer(const std::string& contextId,
-				  const std::string& contextKind,
-				  const std::string& objectId,
-				  const std::string& objectKind)
+				  const std::string& contextKind)
     {
-      if (impl_->startCorbaServer(contextId, contextKind, objectId, objectKind)
-	  != 0) {
+      impl_ = new corba::Server <impl::Problem> (0, NULL, multithread_, "child");
+      impl_->implementation().setServer (this);
+
+      if (impl_->startCorbaServer
+          (contextId, contextKind, "wholebodyStep", "problem") != 0) {
 	HPP_THROW_EXCEPTION (hpp::Exception, "Failed to start corba server.");
       }
     }
-
-    core::ProblemSolverPtr_t Server::problemSolver ()
-    {
-      return problemSolverMap_->selected();
-    }
-
-    corbaServer::ProblemSolverMapPtr_t Server::problemSolverMap ()
-    {
-      return problemSolverMap_;
-    }
   } // namespace wholebodyStep
 } // namespace hpp
+
+HPP_CORBASERVER_DEFINE_PLUGIN(hpp::wholebodyStep::Server)

@@ -21,6 +21,7 @@
 # define HPP_WHOLEBODY_STEP_CORBA_SERVER_HH
 
 # include <hpp/corba/template/server.hh>
+# include <hpp/corbaserver/server-plugin.hh>
 # include <hpp/corbaserver/problem-solver-map.hh>
 # include <hpp/corbaserver/wholebody-step/fwd.hh>
 # include <hpp/corbaserver/wholebody-step/config.hh>
@@ -31,33 +32,22 @@ namespace hpp {
       class Problem;
     } // namespace impl
           
-    class HPP_WHOLEBODY_STEP_CORBA_DLLAPI Server
+    class HPP_WHOLEBODY_STEP_CORBA_DLLAPI Server : public corbaServer::ServerPlugin
     {
     public:
-      Server (int argc, const char* argv[], bool multiThread = false,
-	      const std::string& poaName = "child");
+      Server (bool multiThread = false);
+
       ~Server ();
-      /// Set planner that will be controlled by server
-      void setProblemSolverMap (corbaServer::ProblemSolverMapPtr_t psMap)
-      {
-        problemSolverMap_ = psMap;
-      }
 
       /// Start corba server
-
       /// Call hpp::corba::Server <impl::Problem>::startCorbaServer
       void startCorbaServer(const std::string& contextId,
-			    const std::string& contextKind,
-			    const std::string& objectId,
-			    const std::string& objectKind);
+			    const std::string& contextKind);
 
-      core::ProblemSolverPtr_t problemSolver ();
-
-      corbaServer::ProblemSolverMapPtr_t problemSolverMap ();
+      std::string name () const;
 
     private:
       corba::Server <impl::Problem>* impl_;
-      corbaServer::ProblemSolverMapPtr_t problemSolverMap_;
     };
   } // namespace wholebodyStep
 } // namespace hpp

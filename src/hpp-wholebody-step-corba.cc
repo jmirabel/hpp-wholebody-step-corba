@@ -28,23 +28,12 @@ int main (int argc, const char* argv[])
   problemSolver->pathOptimizers.add ("Walkgen", SmallSteps::create);
   CorbaServer corbaServer (problemSolver, argc, argv, true);
 
-  const bool multithread = corbaServer.multiThread();
-  WholebodyServer wbsServer (argc, argv, multithread);
-  wbsServer.setProblemSolverMap (corbaServer.problemSolverMap());
-
   try {
     corbaServer.startCorbaServer ();
+    corbaServer.loadPlugin (corbaServer.mainContextId(), "wholebody-step-corba.so");
     hppDout (info, "successfully start hpp-corbaserver");
   } catch (const std::exception& exc) {
     hppDout (error, "Faile to start hpp-corbaserver");
-  }
-  try {
-    wbsServer.startCorbaServer (corbaServer.mainContextId(), "corbaserver",
-				"wholebodyStep", "problem");
-
-    hppDout (info, "Successfully started corba server for whole body planner");
-  } catch (const std::exception& exc) {
-    hppDout (error, "failed to start corba server for whole body planner");
   }
   corbaServer.processRequest(true);
 }

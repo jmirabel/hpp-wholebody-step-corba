@@ -39,6 +39,7 @@ SET(${PROJECT_NAME}_HEADERS
 SET(CUSTOM_HEADER_DIR hpp/corbaserver/wholebody-step)
 
 SETUP_HPP_PROJECT()
+LIST(APPEND PKG_CONFIG_ADDITIONAL_VARIABLES cmake_plugin)
 
 # Search for dependencies.
 ADD_REQUIRED_DEPENDENCY("omniORB4 >= 4.1.4")
