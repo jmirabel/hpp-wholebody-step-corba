@@ -18,7 +18,7 @@
 from omniORB import CORBA
 import CosNaming
 
-from hpp.corbaserver.client import _getIIOPurl
+from hpp.corbaserver.client import _getIIOPurl, Client as _Parent
 from hpp.corbaserver.wholebody_step import Problem
 
 class CorbaError(Exception):
@@ -30,38 +30,17 @@ class CorbaError(Exception):
     def __str__(self):
         return repr(self.value)
 
-class Client:
+class Client (_Parent):
   """
   Connect and create clients for hpp-wholebody-step-planner library.
   """
-  def __init__(self, url = None, postContextId = ""):
+  defaultClients = {
+          'problem': Problem,
+          }
+
+  def __init__(self, url = None, context = "corbaserver"):
     """
     Initialize CORBA and create default clients.
     """
-    import sys
-    self.orb = CORBA.ORB_init (sys.argv, CORBA.ORB_ID)
-    if url is None:
-        obj = self.orb.string_to_object (_getIIOPurl ())
-    else:
-        obj = self.orb.string_to_object (url)
-    self.rootContext = obj._narrow(CosNaming.NamingContext)
-    if self.rootContext is None:
-        raise CorbaError ('failed to narrow the root context')
-
-    name = [CosNaming.NameComponent ("hpp" + postContextId, "corbaserver"),
-            CosNaming.NameComponent ("wholebodyStep", "problem")]
-    
-    try:
-        obj = self.rootContext.resolve (name)
-    except CosNaming.NamingContext.NotFound, ex:
-        raise CorbaError ('failed to find wholebodyStep service.')
-    try:
-        client = obj._narrow (Problem)
-    except KeyError:
-        raise CorbaError ('invalid service name wholebodyStep')
-
-    if client is None:
-      # This happens when stubs from client and server are not synchronized.
-        raise CorbaError (
-            'failed to narrow client for service wholebodyStep')
-    self.problem = client
+    self._initOrb (url)
+    self._makeClients ("wholebodyStep", self.defaultClients, context)
